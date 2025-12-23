@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -X POST \"https://api3.oslo.oslobors.no/v1/newsreader/list?category=1102&fromDate=2025-09-18\" -H \"accept: */*\" -H \"content-type: application/json\" -v)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
