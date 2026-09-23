@@ -1,0 +1,1066 @@
+{
+  "header": {
+    "OB_REQUEST_ID": "8ec32e34-fbb3-4a95-836a-1b0d2e442d68",
+    "result.val": 0,
+    "http.code": 200,
+    "result.text": "OK"
+  },
+  "data": {
+    "messages": [
+      {
+        "id": 654802,
+        "messageId": 654802,
+        "newsId": 607081,
+        "title": "Arribatec Group ASA: Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 6806,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "ARR",
+        "issuerName": "Arribatec Group ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-05T12:45:11.577Z",
+        "test": false,
+        "numbAttachments": 0,
+        "clientAnnouncementId": "82aa3da4-aa10-4073-a666-89efa17b99e7",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654777,
+        "messageId": 654777,
+        "newsId": 607056,
+        "title": "Mandatory notification of trade - Protector Forsikring ASA",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 8322,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "PROT",
+        "issuerName": "Protector Forsikring ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-05T11:14:00.824Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "0d62a0c7-5774-42c3-8d5d-bf14639c6fbd",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654772,
+        "messageId": 654772,
+        "newsId": 607050,
+        "title": "Primary insider notification - purchase of shares",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOAM",
+          "MERK"
+        ],
+        "issuerId": 12816,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "CODE",
+        "issuerName": "CodeLab Capital AS",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-05T10:08:14.370Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "503da6b5-9c71-4c40-90e8-4e1b6772839f",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654769,
+        "messageId": 654769,
+        "newsId": 607047,
+        "title": "CADELER A/S: REPORTING ON TRANSACTIONS IN CADELER A/S SHARES BY PERSONS DISCHARGING MANAGERIAL RESPONSIBILITIES AND PERSONS CLOSELY ASSOCIATED WITH THEM",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12825,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "CADLR",
+        "issuerName": "Cadeler A/S",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-05T08:52:13.318Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "d44da500-cc7b-4807-9ec4-76fe3f6b959a",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654747,
+        "messageId": 654747,
+        "newsId": 607029,
+        "title": "Arctic Fish Holding AS: Notification of trade by close associates of primary insiders",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "MERK"
+        ],
+        "issuerId": 12855,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "AFISH",
+        "issuerName": "Arctic Fish Holding AS",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T21:11:44.573Z",
+        "test": false,
+        "numbAttachments": 2,
+        "clientAnnouncementId": "e1a8595a-f628-4ec2-b4d6-b0c4b3a7213e",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654740,
+        "messageId": 654740,
+        "newsId": 607021,
+        "title": "Vår Energi ASA's share saving plan allocates shares",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12949,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "VAR",
+        "issuerName": "Vår Energi ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T17:40:07.199Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "bceabbbc-a2f2-4135-9b62-9fd78741c136",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654737,
+        "messageId": 654737,
+        "newsId": 607018,
+        "title": "Arribatec Group ASA: Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 6806,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "ARR",
+        "issuerName": "Arribatec Group ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T14:41:06.914Z",
+        "test": false,
+        "numbAttachments": 0,
+        "clientAnnouncementId": "6ba8e31c-8d6b-40a0-b7ef-09e9b3acd307",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654735,
+        "messageId": 654735,
+        "newsId": 607016,
+        "title": "Arribatec Group ASA: Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 6806,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "ARR",
+        "issuerName": "Arribatec Group ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T13:51:03.846Z",
+        "test": false,
+        "numbAttachments": 0,
+        "clientAnnouncementId": "594281ff-bf62-4c53-819f-eb5c17079622",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654724,
+        "messageId": 654724,
+        "newsId": 607003,
+        "title": "Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12310,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "ZAL",
+        "issuerName": "Zalaris ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T12:15:18.811Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "88915760-e68b-455c-94f9-d78a4fc1d523",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654641,
+        "messageId": 654641,
+        "newsId": 606921,
+        "title": "Meldepliktig handel",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "MERK"
+        ],
+        "issuerId": 12835,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "KRAB",
+        "issuerName": "Kraft Bank ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T10:59:32.009Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "5d2a1cd9-91b4-4030-90a1-fe5c30fb7a88",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654625,
+        "messageId": 654625,
+        "newsId": 606904,
+        "title": "Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "MERK"
+        ],
+        "issuerId": 12781,
+        "correctionForMessageId": 654599,
+        "correctedByMessageId": 0,
+        "issuerSign": "AIX",
+        "issuerName": "Ayfie International AS",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T07:05:08.334Z",
+        "test": false,
+        "numbAttachments": 0,
+        "clientAnnouncementId": "bd4c44eb-a3b0-495e-8c26-2a7b25ebeaa4",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654624,
+        "messageId": 654624,
+        "newsId": 606903,
+        "title": "Mandatory notification of trade by Primary Insider",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12767,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "PEXIP",
+        "issuerName": "Pexip Holding ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T06:17:55.607Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "6a713170-d7f9-4187-b804-0c505440cfcf",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654623,
+        "messageId": 654623,
+        "newsId": 606895,
+        "title": "Trade primary insiders",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 1007,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "AFK",
+        "issuerName": "Arendals Fossekompani ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T06:00:00.000Z",
+        "test": false,
+        "numbAttachments": 6,
+        "clientAnnouncementId": "511b36c2-aa1a-4173-a39b-471693c9f3ca",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654612,
+        "messageId": 654612,
+        "newsId": 606894,
+        "title": "Exercise of employee share options under share incentive program",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12310,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "ZAL",
+        "issuerName": "Zalaris ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-04T05:00:00.000Z",
+        "test": false,
+        "numbAttachments": 6,
+        "clientAnnouncementId": "87c67484-7fd6-451c-8691-25de7ce3e929",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654609,
+        "messageId": 654609,
+        "newsId": 606891,
+        "title": "Ensurge Micropower ASA - Mandatory Notice of Trade for Primary Insiders",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 8458,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "ENSU",
+        "issuerName": "Ensurge Micropower ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-03T19:12:12.607Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "408142c0-c45a-4959-ac32-5b880b6c5828",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654601,
+        "messageId": 654601,
+        "newsId": 606883,
+        "title": "Cloudberry Clean Energy ASA | Exercise of warrants and mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12762,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "CLOUD",
+        "issuerName": "Cloudberry Clean Energy ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-03T15:45:03.421Z",
+        "test": false,
+        "numbAttachments": 2,
+        "clientAnnouncementId": "3f133a9a-63c1-4343-947a-5da58f0d8f7b",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654599,
+        "messageId": 654599,
+        "newsId": 606880,
+        "title": "Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "MERK"
+        ],
+        "issuerId": 12781,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 654625,
+        "issuerSign": "AIX",
+        "issuerName": "Ayfie International AS",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-03T15:32:24.635Z",
+        "test": false,
+        "numbAttachments": 0,
+        "clientAnnouncementId": "f78a0325-6ef9-431a-b0fa-9308385331eb",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654531,
+        "messageId": 654531,
+        "newsId": 606809,
+        "title": "AKVA group ASA: Exercise of share options and mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 8194,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "AKVA",
+        "issuerName": "AKVA group ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-03T06:00:00.675Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "dba5be00-ef8e-4ba3-bc03-2541b1354f2d",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654522,
+        "messageId": 654522,
+        "newsId": 606800,
+        "title": "Elmera Group ASA: Primary insider disclosure and purchase of treasury shares",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12598,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "ELMRA",
+        "issuerName": "Elmera Group ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-02T17:12:59.700Z",
+        "test": false,
+        "numbAttachments": 8,
+        "clientAnnouncementId": "25984016-050c-45f6-8c47-622dd39f400f",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654521,
+        "messageId": 654521,
+        "newsId": 606799,
+        "title": "Vow ASA: Notification of trade by close associate of primary insider",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12294,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "VOW",
+        "issuerName": "Vow ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-02T15:34:20.630Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "c0cb2821-df24-44e9-a6d0-40318e9d37fb",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654519,
+        "messageId": 654519,
+        "newsId": 606797,
+        "title": "Saga Pure ASA - Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 11191,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "SAGA",
+        "issuerName": "Saga Pure ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-02T14:47:48.664Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "03e012ba-96f1-454a-9031-1045ba8f2c72",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654516,
+        "messageId": 654516,
+        "newsId": 606794,
+        "title": "Saga Pure ASA - Mandatory notification of trade - Share lending re-delivery",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 11191,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "SAGA",
+        "issuerName": "Saga Pure ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-02T14:19:02.280Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "2ab32d4c-079a-4a0c-a554-e8578de4a1d5",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654515,
+        "messageId": 654515,
+        "newsId": 606793,
+        "title": "Trøndelag Sparebank - meldepliktig handel foretatt av nærstående",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL",
+          "XOAM"
+        ],
+        "issuerId": 11335,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "TRSB",
+        "issuerName": "Trøndelag Sparebank",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-02T14:15:43.974Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "6dc18392-36ca-4a59-aea6-89b549f53515",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654491,
+        "messageId": 654491,
+        "newsId": 606769,
+        "title": "Cavendish Hydrogen ASA - Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 13041,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "CAVEN",
+        "issuerName": "Cavendish Hydrogen ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-02T09:57:35.571Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "cb20e825-9cae-4d16-a68d-3e0cd3c697a8",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654467,
+        "messageId": 654467,
+        "newsId": 606746,
+        "title": "Saga Pure ASA - Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 11191,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "SAGA",
+        "issuerName": "Saga Pure ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-02T05:53:24.117Z",
+        "test": false,
+        "numbAttachments": 3,
+        "clientAnnouncementId": "4d0dbe39-a49a-4e00-a2b8-f439038379e7",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654458,
+        "messageId": 654458,
+        "newsId": 606738,
+        "title": "Aker ASA: Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 6047,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "AKER",
+        "issuerName": "Aker ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T20:24:20.061Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "02838283-a9f9-4bb7-b9e4-9c66b2019102",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654457,
+        "messageId": 654457,
+        "newsId": 606737,
+        "title": "Aker Horizons ASA: Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12846,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "AKH",
+        "issuerName": "Aker Horizons ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T20:21:20.119Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "03a423cc-9d1d-462b-bdca-f40e75c3459d",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654449,
+        "messageId": 654449,
+        "newsId": 606728,
+        "title": "Lytix Biopharma AS: Grant of share options to management and key personnel",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "MERK"
+        ],
+        "issuerId": 12904,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "LYTIX",
+        "issuerName": "Lytix Biopharma AS",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T17:51:06.138Z",
+        "test": false,
+        "numbAttachments": 2,
+        "clientAnnouncementId": "ad3d389d-7fd7-4668-8db7-ae8c5dc0c3ed",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654448,
+        "messageId": 654448,
+        "newsId": 606726,
+        "title": "SalMar - Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 8288,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "SALM",
+        "issuerName": "SalMar ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T17:05:00.895Z",
+        "test": false,
+        "numbAttachments": 2,
+        "clientAnnouncementId": "4b53b307-c8bd-4ab6-bd9b-181479c813c5",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654447,
+        "messageId": 654447,
+        "newsId": 606727,
+        "title": "SalMar - Meldepliktig handel",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 8288,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "SALM",
+        "issuerName": "SalMar ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T17:05:00.887Z",
+        "test": false,
+        "numbAttachments": 2,
+        "clientAnnouncementId": "d81c8b3c-1779-4de8-a444-7aaf27f7bb85",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654446,
+        "messageId": 654446,
+        "newsId": 606724,
+        "title": "Vow ASA: Notification of trade by close associate of primary insider",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12294,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "VOW",
+        "issuerName": "Vow ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T16:32:17.609Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "9e594991-fea0-4950-9e3c-c29516890c33",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654443,
+        "messageId": 654443,
+        "newsId": 606721,
+        "title": "OMDA AS – Mandatory notification of trade by primary insiders",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOAM",
+          "MERK"
+        ],
+        "issuerId": 12807,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "OMDA",
+        "issuerName": "Omda AS",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T14:34:33.871Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "ef2a814d-a481-423c-8576-0f617a055e86",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654442,
+        "messageId": 654442,
+        "newsId": 606720,
+        "title": "TGS Vesting Under the 2022 Long-term Incentive Plan",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 6070,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "TGS",
+        "issuerName": "TGS ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T14:30:14.648Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "1eb77112-5439-433c-89c8-f9f8d4bc6c90",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654439,
+        "messageId": 654439,
+        "newsId": 606717,
+        "title": "Mandatory notification of trade",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOSL"
+        ],
+        "issuerId": 12310,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "ZAL",
+        "issuerName": "Zalaris ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T13:20:55.485Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "a277a1de-a113-4bd1-ae06-df5a88fc4925",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      },
+      {
+        "id": 654435,
+        "messageId": 654435,
+        "newsId": 606713,
+        "title": "NORSE ATLANTIC ASA: MANDATORY NOTIFICATION OF TRADE BY PRIMARY INSIDER",
+        "category": [
+          {
+            "id": 1102,
+            "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+            "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+          }
+        ],
+        "markets": [
+          "XOAX"
+        ],
+        "issuerId": 12882,
+        "correctionForMessageId": 0,
+        "correctedByMessageId": 0,
+        "issuerSign": "NORSE",
+        "issuerName": "Norse Atlantic ASA",
+        "instrId": 0,
+        "instrumentName": "",
+        "instrumentFullName": "",
+        "publishedTime": "2025-09-01T12:41:43.717Z",
+        "test": false,
+        "numbAttachments": 1,
+        "clientAnnouncementId": "58c95745-2149-4129-9322-f8463af0df11",
+        "infoRequired": 0,
+        "oamMandatory": 0
+      }
+    ],
+    "overflow": false
+  }
+}
