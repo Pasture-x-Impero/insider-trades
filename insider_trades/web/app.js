@@ -1,4 +1,6 @@
-/* Insider Trades frontend. No build step, no dependencies. */
+/* Insider Trades frontend. No build step, no dependencies.
+   Runs in two modes: against the HTTP API, or fully offline when the page carries
+   its data in a <script id="insider-data" type="application/json"> block. */
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -29,6 +31,8 @@
   };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+  // ----- data layer --------------------------------------------------------
+
   async function getJSON(url, opts) {
     const r = await fetch(url, opts);
     if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.statusText);
@@ -43,12 +47,95 @@
     if (state.from) p.set("from", state.from);
     if (state.to) p.set("to", state.to);
     if (state.minv) p.set("min_value", state.minv);
-    p.set("sort", state.sort);
-    p.set("order", state.order);
-    p.set("limit", state.limit);
-    p.set("offset", state.offset);
     return p;
   }
+
+  const remote = {
+    mode: "live",
+    trades() {
+      const p = params();
+      p.set("sort", state.sort); p.set("order", state.order);
+      p.set("limit", state.limit); p.set("offset", state.offset);
+      return getJSON(`/api/trades?${p}`);
+    },
+    summary() { return getJSON(`/api/summary?${params()}`); },
+    trade(id) { return getJSON(`/api/trades/${id}`); },
+    prices(t) { return getJSON(`/api/prices/${t.id}`); },
+    sync() { return getJSON("/api/sync", { method: "POST" }); },
+  };
+
+  function embedded(data) {
+    const all = data.trades;
+    const matches = (t) => {
+      if (state.market && t.market !== state.market) return false;
+      if (state.type && t.trade_type !== state.type) return false;
+      if (state.from && t.published_at < state.from) return false;
+      if (state.to && t.published_at.slice(0, 10) > state.to) return false;
+      if (state.minv && !(t.value >= Number(state.minv))) return false;
+      if (state.q) {
+        const q = state.q.toLowerCase();
+        const hay = [t.issuer, t.ticker, t.insider_name, t.title].join(" ").toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    };
+    const filtered = () => all.filter(matches);
+    return {
+      mode: "static",
+      generated_at: data.generated_at,
+      async trades() {
+        const items = filtered();
+        const k = state.sort, dir = state.order === "asc" ? 1 : -1;
+        items.sort((a, b) => {
+          const av = a[k], bv = b[k];
+          if (av == null && bv == null) return b.published_at.localeCompare(a.published_at);
+          if (av == null) return 1;
+          if (bv == null) return -1;
+          const c = typeof av === "number" ? av - bv : String(av).localeCompare(String(bv));
+          return c ? c * dir : b.published_at.localeCompare(a.published_at);
+        });
+        return { total: items.length, items: items.slice(state.offset, state.offset + state.limit) };
+      },
+      async summary() {
+        const items = filtered();
+        const by_type = {};
+        const agg = {};
+        for (const t of items) {
+          const bt = (by_type[t.trade_type] ||= { count: 0, value: 0 });
+          bt.count += 1; bt.value += t.value || 0;
+          if ((t.trade_type === "buy" || t.trade_type === "sell") && t.value != null) {
+            const key = `${t.trade_type}|${t.market}|${t.issuer}`;
+            const a = (agg[key] ||= { issuer: t.issuer, ticker: t.ticker, market: t.market, n: 0, v: 0, type: t.trade_type });
+            a.n += 1; a.v += t.value;
+          }
+        }
+        const top = (type) => Object.values(agg).filter((a) => a.type === type).sort((a, b) => b.v - a.v).slice(0, 10);
+        return { total: items.length, by_type, top_buys: top("buy"), top_sells: top("sell"), last_sync: data.last_sync || {} };
+      },
+      async trade(id) {
+        const t = all.find((x) => String(x.id) === String(id));
+        if (!t) throw new Error("trade not found");
+        return t;
+      },
+      async prices(t) {
+        const series = t.symbol && data.prices && data.prices[t.symbol];
+        if (!series) throw new Error("No price history was embedded for this issuer.");
+        const anchor = t.transaction_date || t.published_at.slice(0, 10);
+        const from = new Date(anchor); from.setDate(from.getDate() - 30);
+        const points = series.points.filter((p) => p.date >= from.toISOString().slice(0, 10));
+        const anchorPt = points.find((p) => p.date >= anchor);
+        const last = points.length ? points[points.length - 1].close : null;
+        return {
+          ...series, points, trade_date: anchor, anchor_close: anchorPt ? anchorPt.close : null,
+          change_since_trade: anchorPt && last ? last / anchorPt.close - 1 : null,
+        };
+      },
+      async sync() { throw new Error("This is a static snapshot. Regenerate it with: insider-trades render"); },
+    };
+  }
+
+  const dataEl = $("#insider-data");
+  const api = dataEl ? embedded(JSON.parse(dataEl.textContent)) : remote;
 
   // ----- table -------------------------------------------------------------
 
@@ -56,7 +143,7 @@
     const tbody = $("#trades tbody");
     tbody.innerHTML = `<tr><td colspan="8" class="empty">Loading…</td></tr>`;
     try {
-      const data = await getJSON(`/api/trades?${params()}`);
+      const data = await api.trades();
       state.total = data.total;
       renderRows(data.items);
       $("#count").textContent = data.total
@@ -76,12 +163,12 @@
   function renderRows(items) {
     const tbody = $("#trades tbody");
     if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="8" class="empty">No trades match these filters. Try widening the date range or press Sync now.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="empty">No trades match these filters. Try widening the date range.</td></tr>`;
       return;
     }
     tbody.innerHTML = items.map((t) => {
       const cur = t.currency || CURRENCY_DEFAULT[t.market];
-      const who = t.insider_name || "<span class=\"muted\">Unknown</span>";
+      const who = t.insider_name ? esc(t.insider_name) : "<span class=\"muted\">Unknown</span>";
       const role = [t.position, t.close_associate ? "close associate" : ""].filter(Boolean).join(", ");
       return `<tr data-id="${t.id}" class="${t.parse_confidence < 0.6 ? "low" : ""}">
         <td>${fmtDate(t.published_at)}</td>
@@ -100,9 +187,7 @@
 
   async function loadSummary() {
     try {
-      const p = params();
-      ["sort", "order", "limit", "offset"].forEach((k) => p.delete(k));
-      const s = await getJSON(`/api/summary?${p}`);
+      const s = await api.summary();
       const buy = s.by_type.buy || { count: 0, value: 0 };
       const sell = s.by_type.sell || { count: 0, value: 0 };
       const topBuy = s.top_buys[0];
@@ -127,7 +212,10 @@
       const when = r.finished_at ? new Date(r.finished_at).toLocaleString() : "never";
       return `${MARKET_LABEL[m] || m}: ${r.error ? "failed" : when}`;
     });
-    $("#sync-status").textContent = parts.length ? `Last sync – ${parts.join(" · ")}` : "Not synced yet";
+    const prefix = api.mode === "static" && api.generated_at
+      ? `Snapshot ${new Date(api.generated_at).toLocaleString()}`
+      : "Last sync";
+    $("#sync-status").textContent = parts.length ? `${prefix} – ${parts.join(" · ")}` : "Not synced yet";
     $("#sync-status").title = Object.values(last || {}).map((r) => r.error || "").filter(Boolean).join("\n");
   }
 
@@ -140,7 +228,7 @@
     body.innerHTML = `<p class="muted">Loading…</p>`;
     let t;
     try {
-      t = await getJSON(`/api/trades/${id}`);
+      t = await api.trade(id);
     } catch (e) {
       body.innerHTML = `<p class="muted">${esc(e.message)}</p>`;
       return;
@@ -174,7 +262,7 @@
   async function loadChart(t) {
     const el = $("#chart");
     try {
-      const d = await getJSON(`/api/prices/${t.id}`);
+      const d = await api.prices(t);
       renderChart(el, d, t);
     } catch (e) {
       el.innerHTML = `<h3>Share price around the trade</h3><p class="muted">${esc(e.message)}</p>`;
@@ -267,15 +355,16 @@
   });
   $("#close").addEventListener("click", () => { $("#detail").hidden = true; });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("#detail").hidden = true; });
-  $("#sync-btn").addEventListener("click", async () => {
-    const btn = $("#sync-btn");
-    btn.disabled = true; $("#sync-status").textContent = "Syncing…";
+  const syncBtn = $("#sync-btn");
+  if (api.mode === "static") syncBtn.hidden = true;
+  syncBtn.addEventListener("click", async () => {
+    syncBtn.disabled = true; $("#sync-status").textContent = "Syncing…";
     try {
-      const r = await getJSON("/api/sync", { method: "POST" });
+      const r = await api.sync();
       const failed = Object.entries(r).filter(([, v]) => v.error);
       if (failed.length) alert(failed.map(([m, v]) => `${m}: ${v.error}`).join("\n"));
     } catch (e) { alert(e.message); }
-    btn.disabled = false;
+    syncBtn.disabled = false;
     refresh();
   });
 

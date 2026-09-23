@@ -1,4 +1,4 @@
-"""Command line entry point: ``insider-trades sync|serve|export``."""
+"""Command line entry point: ``insider-trades render|sync|serve|export``."""
 
 from __future__ import annotations
 
@@ -27,6 +27,14 @@ def main(argv: list[str] | None = None) -> int:
     p_serve.add_argument("--port", type=int, default=8000)
     p_serve.add_argument("--reload", action="store_true")
 
+    p_render = sub.add_parser("render", help="write a self contained HTML file with the trades")
+    p_render.add_argument("--out", default="insider-trades.html", help="output path (default insider-trades.html)")
+    p_render.add_argument("--days", type=int, default=90, help="include trades published in the last N days")
+    p_render.add_argument("--market", choices=[m.value for m in Market])
+    p_render.add_argument("--limit", type=int, default=5000)
+    p_render.add_argument("--no-sync", action="store_true", help="render from the database without fetching first")
+    p_render.add_argument("--no-prices", action="store_true", help="skip fetching share prices for the charts")
+
     p_export = sub.add_parser("export", help="write stored trades as CSV to stdout")
     p_export.add_argument("--market", choices=[m.value for m in Market])
     p_export.add_argument("--type", choices=[t.value for t in TradeType])
@@ -49,6 +57,31 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print(f"{market.value}: fetched={result.fetched} inserted={result.inserted} updated={result.updated}")
         return 1 if failed else 0
+
+    if args.command == "render":
+        from datetime import timedelta
+        from pathlib import Path
+
+        from .prices import PriceService
+        from .render import render_to_file
+        from .sync import make_client
+
+        store = Store(settings.db_path)
+        markets = [Market(args.market)] if args.market else None
+        with make_client(settings) as client:
+            if not args.no_sync:
+                for market, result in sync_all(store, settings, markets, client=client).items():
+                    if isinstance(result, Exception):
+                        print(f"{market.value}: sync FAILED, rendering stored data ({result})", file=sys.stderr)
+                    else:
+                        print(f"{market.value}: fetched={result.fetched} inserted={result.inserted} updated={result.updated}")
+            query = TradeQuery(market=markets[0] if markets else None,
+                               date_from=date.today() - timedelta(days=args.days), limit=args.limit)
+            prices = None if args.no_prices else PriceService(client, store)
+            out = render_to_file(store, Path(args.out), query, prices)
+        items, _ = store.query(query)
+        print(f"wrote {out} with {len(items)} trades")
+        return 0
 
     if args.command == "serve":
         import uvicorn

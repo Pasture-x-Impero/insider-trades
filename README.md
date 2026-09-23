@@ -2,7 +2,8 @@
 
 A tracker for insider trades on Oslo Børs and Nasdaq Stockholm. It pulls the
 official disclosures, normalises them into one schema, stores them in SQLite, and
-serves a small web app with filters, a summary, and a price chart around each trade.
+writes a single self contained HTML file with filters, a summary, and a price chart
+around each trade. The same interface can also be served live.
 
 ## Data sources
 
@@ -17,18 +18,40 @@ Share prices come from Yahoo Finance and are cached for six hours.
 
 ```bash
 pip install -e ".[dev]"
+insider-trades render        # fetches both markets, writes insider-trades.html
+```
+
+Open `insider-trades.html` in a browser. It needs no server and no network: the
+trades and the price history are embedded in the page, and filtering, sorting,
+search and the charts run in the browser. Options:
+
+```
+insider-trades render [--out FILE] [--days 90] [--market NO|SE] [--no-sync] [--no-prices]
+```
+
+`--no-sync` renders from the local database without fetching. `--no-prices`
+skips the share price lookups, which makes rendering much faster.
+
+The workflow in `.github/workflows/publish.yml` regenerates the page every six
+hours and publishes it to GitHub Pages. Enable Pages with source "GitHub Actions"
+in the repository settings to turn it on.
+
+### Live server
+
+```bash
 insider-trades sync          # fetch the last 60 days from both markets into insider_trades.db
 insider-trades serve         # http://127.0.0.1:8000
 ```
 
-The server also syncs on startup and every 30 minutes. Both can be changed with
-environment variables, see `.env.example`.
+The server syncs on startup and every 30 minutes and has a Sync now button.
+Both intervals can be changed with environment variables, see `.env.example`.
 
-To try the interface without network access, seed the database from the recorded
+To try either mode without network access, seed the database from the recorded
 test fixtures:
 
 ```bash
 INSIDER_DB=demo.db python scripts/seed_fixtures.py
+INSIDER_DB=demo.db insider-trades render --no-sync --no-prices --days 3650
 INSIDER_DB=demo.db INSIDER_SYNC_ON_STARTUP=0 insider-trades serve
 ```
 
@@ -42,6 +65,7 @@ docker run -p 8000:8000 -v insider-data:/data insider-trades
 ## CLI
 
 ```
+insider-trades render [--out FILE] [--days N] [--market NO|SE] [--no-sync] [--no-prices]
 insider-trades sync [--market NO|SE] [--since YYYY-MM-DD]
 insider-trades serve [--host H] [--port P] [--reload]
 insider-trades export [--market NO|SE] [--type buy|sell|...] [--since YYYY-MM-DD] > trades.csv
@@ -81,9 +105,10 @@ insider_trades/
   parsers/           norway.py (free text) and numbers.py (Nordic number and date formats)
   prices.py          Yahoo Finance client
   sync.py            Incremental sync
+  render.py          Self contained HTML output
   api.py             FastAPI app
   cli.py             Command line
-  web/               Frontend, plain HTML, CSS and JavaScript
+  web/               Frontend, plain HTML, CSS and JavaScript, used by both render and serve
 tests/               pytest suite; fixtures include a recorded Oslo Børs response
 scripts/             seed_fixtures.py
 ```
