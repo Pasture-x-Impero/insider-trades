@@ -51,6 +51,12 @@ class OsloBorsSource:
     def fetch(self, since: date) -> list[Trade]:
         messages = [m for m in self.list_messages(since) if not m.get("test")]
         log.info("oslo børs: %d announcements since %s", len(messages), since)
+        if len(messages) > self.max_detail_fetch:
+            log.warning(
+                "oslo børs: only the first %d of %d announcements get their body text; "
+                "raise INSIDER_MAX_DETAIL_FETCH to parse the rest",
+                self.max_detail_fetch, len(messages),
+            )
         trades: list[Trade] = []
         for i, msg in enumerate(messages):
             detail: dict = {}
