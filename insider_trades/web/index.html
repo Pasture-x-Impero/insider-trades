@@ -21,6 +21,10 @@
 
 <main>
   <section class="filters" aria-label="Filters">
+    <div class="seg" role="group" aria-label="View">
+      <button data-view="trades" class="on" type="button">Trades</button>
+      <button data-view="companies" type="button">Companies</button>
+    </div>
     <div class="seg" role="group" aria-label="Market">
       <button data-market="" class="on" type="button">All</button>
       <button data-market="NO" type="button">Norway</button>
@@ -39,11 +43,12 @@
     <label>From <input id="from" type="date"></label>
     <label>To <input id="to" type="date"></label>
     <label>Min value <input id="minv" type="number" min="0" step="100000" placeholder="0"></label>
+    <span id="issuer-chip" class="chip" hidden><span id="issuer-chip-name"></span><button id="issuer-clear" type="button" aria-label="Clear company filter">×</button></span>
   </section>
 
   <section class="tiles" id="tiles" aria-label="Summary"></section>
 
-  <section class="table-wrap">
+  <section class="table-wrap" id="trades-view">
     <table id="trades">
       <thead>
         <tr>
@@ -52,9 +57,9 @@
           <th data-sort="issuer" class="sortable">Company</th>
           <th>Insider</th>
           <th>Type</th>
+          <th data-sort="value" class="sortable num">Value</th>
           <th data-sort="quantity" class="sortable num">Quantity</th>
           <th data-sort="price" class="sortable num">Price</th>
-          <th data-sort="value" class="sortable num">Value</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -66,6 +71,26 @@
         <button id="next" type="button">Next</button>
       </div>
     </div>
+  </section>
+
+  <section class="table-wrap" id="companies-view" hidden>
+    <p class="hint muted">Market buys and sells per company in the selected period. Net is bought minus sold. The last column is net insider buying as a share of the company's market value. Click a company to see its trades.</p>
+    <table id="companies">
+      <thead>
+        <tr>
+          <th data-csort="issuer" class="sortable">Company</th>
+          <th>Market</th>
+          <th data-csort="buy_value" class="sortable num">Bought</th>
+          <th data-csort="sell_value" class="sortable num">Sold</th>
+          <th data-csort="net_value" class="sortable num">Net</th>
+          <th data-csort="trade_count" class="sortable num">Trades</th>
+          <th data-csort="insiders" class="sortable num">Insiders</th>
+          <th data-csort="market_cap" class="sortable num">Market cap</th>
+          <th data-csort="net_pct_of_cap" class="sortable num active">Net % of cap</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </section>
 </main>
 

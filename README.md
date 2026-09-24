@@ -81,12 +81,21 @@ so corrections are picked up. Trades are upserted by source id, so re-running is
 | `GET /api/trades` | List trades. Filters: `market`, `type`, `q`, `issuer`, `from`, `to`, `min_value`. Paging: `limit`, `offset`. Sorting: `sort`, `order`. |
 | `GET /api/trades/{id}` | One trade with the original text |
 | `GET /api/summary?days=30` | Counts and values by type, most bought and sold issuers, last sync per market |
+| `GET /api/companies` | Per company totals with market cap and net share of market cap. Filters: `market`, `q`, `from`, `to`, `min_value` |
 | `GET /api/issuers?q=` | Issuer autocomplete |
 | `GET /api/prices/{id}` | Daily closes from 30 days before the trade to today, plus the change since the trade |
 | `POST /api/sync` | Run a sync now, optionally for one `market` and from a `since` date |
 | `GET /api/health` | Liveness |
 
 Interactive docs are at `/docs`.
+
+## Companies view
+
+The Companies tab aggregates market buys and sells per issuer for the selected
+period: bought, sold, net, number of trades and distinct insiders, market cap,
+and net insider buying as a share of market cap. Rows where that share is at or
+above 0.5% are highlighted. Market caps come from Yahoo Finance's quote endpoint
+and are cached for a day. Clicking a company filters the Trades tab to it.
 
 ## Trade types
 

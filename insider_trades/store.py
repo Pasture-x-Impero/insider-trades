@@ -236,6 +236,32 @@ class Store:
             "last_sync": last_sync,
         }
 
+    def companies(self, q: TradeQuery) -> list[dict]:
+        """Per issuer totals of market buys and sells within the query's filters."""
+        where, params = self._where(q)
+        with self._conn() as c:
+            rows = c.execute(
+                f"""
+                SELECT market, issuer, MAX(ticker) ticker, MAX(isin) isin,
+                       SUM(trade_type='buy') buy_count,
+                       SUM(CASE WHEN trade_type='buy' THEN value ELSE 0 END) buy_value,
+                       SUM(trade_type='sell') sell_count,
+                       SUM(CASE WHEN trade_type='sell' THEN value ELSE 0 END) sell_value,
+                       COUNT(*) trade_count,
+                       COUNT(DISTINCT insider_name) insiders,
+                       MAX(published_at) last_published
+                FROM trades {where}
+                GROUP BY market, issuer
+                """,
+                params,
+            ).fetchall()
+        out = []
+        for r in rows:
+            d = dict(r)
+            d["net_value"] = (d["buy_value"] or 0) - (d["sell_value"] or 0)
+            out.append(d)
+        return out
+
     def issuers(self, prefix: str, limit: int = 20) -> list[dict]:
         with self._conn() as c:
             rows = c.execute(

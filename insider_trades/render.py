@@ -15,7 +15,7 @@ from pathlib import Path
 import httpx
 
 from .models import Market
-from .prices import PriceService
+from .prices import PriceService, QuoteService
 from .store import Store, TradeQuery
 
 log = logging.getLogger(__name__)
@@ -43,12 +43,16 @@ def collect_prices(store: Store, trades: list[dict], prices: PriceService) -> di
 
 
 def render_html(store: Store, query: TradeQuery, prices: PriceService | None = None,
-                title: str = "Insider Trades") -> str:
+                title: str = "Insider Trades", quotes: QuoteService | None = None) -> str:
     items, total = store.query(query)
     trades = [t.model_dump(mode="json") for t in items]
     for t in trades:
         t["symbol"] = None
     price_series = collect_prices(store, trades, prices) if prices else {}
+    if prices and quotes is None:
+        quotes = QuoteService(prices.client, store)
+    symbols = sorted({t["symbol"] for t in trades if t.get("symbol")})
+    quote_info = quotes.quotes(symbols) if quotes and symbols else {}
     summary = store.summary(TradeQuery())
     payload = {
         "generated_at": datetime.now(UTC).isoformat(),
@@ -56,6 +60,7 @@ def render_html(store: Store, query: TradeQuery, prices: PriceService | None = N
         "last_sync": summary["last_sync"],
         "trades": trades,
         "prices": price_series,
+        "quotes": quote_info,
     }
     data_json = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     html = (WEB_DIR / "index.html").read_text(encoding="utf-8")
@@ -70,8 +75,9 @@ def render_html(store: Store, query: TradeQuery, prices: PriceService | None = N
     return html
 
 
-def render_to_file(store: Store, out: Path, query: TradeQuery, prices: PriceService | None = None) -> Path:
+def render_to_file(store: Store, out: Path, query: TradeQuery, prices: PriceService | None = None,
+                   quotes: QuoteService | None = None) -> Path:
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render_html(store, query, prices), encoding="utf-8")
+    out.write_text(render_html(store, query, prices, quotes=quotes), encoding="utf-8")
     return out

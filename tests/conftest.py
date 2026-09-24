@@ -37,6 +37,21 @@ def fake_handler(request: httpx.Request) -> httpx.Response:
     if "marknadssok.fi.se" in url:
         return httpx.Response(200, content=(FIXTURES / "fi_export_sample.csv").read_bytes(),
                               headers={"content-type": "text/csv"})
+    if "fc.yahoo.com" in url:
+        return httpx.Response(404, headers={"set-cookie": "A3=test; Domain=.yahoo.com"})
+    if "test/getcrumb" in url:
+        return httpx.Response(200, text="crumb123")
+    if "v7/finance/quote" in url:
+        assert request.url.params.get("crumb") == "crumb123"
+        wanted = request.url.params.get("symbols", "").split(",")
+        known = {
+            "ARR.OL": {"symbol": "ARR.OL", "shortName": "Arribatec", "currency": "NOK",
+                       "regularMarketPrice": 0.7, "marketCap": 5_000_000, "sharesOutstanding": 7_142_857},
+            "VOLV-B.ST": {"symbol": "VOLV-B.ST", "shortName": "Volvo B", "currency": "SEK",
+                          "regularMarketPrice": 281.5, "marketCap": 560_000_000_000},
+        }
+        return httpx.Response(200, json={"quoteResponse": {"result": [known[s] for s in wanted if s in known],
+                                                             "error": None}})
     if "finance/search" in url:
         return httpx.Response(200, json={"quotes": [
             {"symbol": "VOLV-B.ST", "quoteType": "EQUITY", "exchange": "STO"}]})

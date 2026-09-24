@@ -6,8 +6,9 @@
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
   const state = {
-    market: "", type: "", q: "", from: "", to: "", minv: "",
+    view: "trades", market: "", type: "", q: "", from: "", to: "", minv: "", issuer: "",
     sort: "published_at", order: "desc", limit: 50, offset: 0, total: 0,
+    csort: "net_pct_of_cap", corder: "desc",
   };
   const TYPE_LABEL = {
     buy: "Buy", sell: "Sell", option_exercise: "Option exercise", allotment: "Allotment",
@@ -21,6 +22,7 @@
   const fmtMoney = (n, cur) => (n == null ? "" : `${fmtNum(n, 0)} ${cur || ""}`.trim());
   const fmtPrice = (n, cur) => (n == null ? "" : `${fmtNum(n, 2)} ${cur || ""}`.trim());
   const fmtDate = (iso) => (iso ? iso.slice(0, 10) : "");
+  const fmtPct = (x) => (x == null ? "" : `${x >= 0 ? "+" : ""}${(x * 100).toFixed(2)}%`);
   const compact = (n) => {
     if (n == null) return "";
     const abs = Math.abs(n);
@@ -47,6 +49,7 @@
     if (state.from) p.set("from", state.from);
     if (state.to) p.set("to", state.to);
     if (state.minv) p.set("min_value", state.minv);
+    if (state.issuer) p.set("issuer", state.issuer);
     return p;
   }
 
@@ -59,6 +62,7 @@
       return getJSON(`/api/trades?${p}`);
     },
     summary() { return getJSON(`/api/summary?${params()}`); },
+    companies() { const p = params(); p.delete("issuer"); p.delete("type"); return getJSON(`/api/companies?${p}`); },
     trade(id) { return getJSON(`/api/trades/${id}`); },
     prices(t) { return getJSON(`/api/prices/${t.id}`); },
     sync() { return getJSON("/api/sync", { method: "POST" }); },
@@ -66,9 +70,10 @@
 
   function embedded(data) {
     const all = data.trades;
-    const matches = (t) => {
+    const matches = (t, opts = {}) => {
       if (state.market && t.market !== state.market) return false;
-      if (state.type && t.trade_type !== state.type) return false;
+      if (!opts.ignoreType && state.type && t.trade_type !== state.type) return false;
+      if (!opts.ignoreIssuer && state.issuer && t.issuer !== state.issuer) return false;
       if (state.from && t.published_at < state.from) return false;
       if (state.to && t.published_at.slice(0, 10) > state.to) return false;
       if (state.minv && !(t.value >= Number(state.minv))) return false;
@@ -112,6 +117,29 @@
         const top = (type) => Object.values(agg).filter((a) => a.type === type).sort((a, b) => b.v - a.v).slice(0, 10);
         return { total: items.length, by_type, top_buys: top("buy"), top_sells: top("sell"), last_sync: data.last_sync || {} };
       },
+      async companies() {
+        const agg = {};
+        for (const t of all) {
+          if (!matches(t, { ignoreType: true, ignoreIssuer: true })) continue;
+          const key = `${t.market}|${t.issuer}`;
+          const a = (agg[key] ||= {
+            market: t.market, issuer: t.issuer, ticker: t.ticker, symbol: t.symbol, buy_count: 0, buy_value: 0,
+            sell_count: 0, sell_value: 0, trade_count: 0, insiders: new Set(), market_cap: null,
+          });
+          a.trade_count += 1;
+          if (t.insider_name) a.insiders.add(t.insider_name);
+          if (t.symbol && !a.symbol) a.symbol = t.symbol;
+          if (t.trade_type === "buy") { a.buy_count += 1; a.buy_value += t.value || 0; }
+          if (t.trade_type === "sell") { a.sell_count += 1; a.sell_value += t.value || 0; }
+        }
+        return Object.values(agg).map((a) => {
+          const q = a.symbol && data.quotes ? data.quotes[a.symbol] : null;
+          const cap = q && q.market_cap ? q.market_cap : null;
+          const net = a.buy_value - a.sell_value;
+          return { ...a, insiders: a.insiders.size, net_value: net, market_cap: cap,
+            net_pct_of_cap: cap ? net / cap : null };
+        });
+      },
       async trade(id) {
         const t = all.find((x) => String(x.id) === String(id));
         if (!t) throw new Error("trade not found");
@@ -154,7 +182,7 @@
     } catch (e) {
       tbody.innerHTML = `<tr><td colspan="8" class="empty">${esc(e.message)}</td></tr>`;
     }
-    $$("th.sortable").forEach((th) => {
+    $$("#trades th.sortable").forEach((th) => {
       th.classList.toggle("active", th.dataset.sort === state.sort);
       th.classList.toggle("asc", th.dataset.sort === state.sort && state.order === "asc");
     });
@@ -176,11 +204,81 @@
         <td>${esc(t.issuer)}${t.ticker ? `<span class="sub">${esc(t.ticker)}</span>` : ""}</td>
         <td>${who}${role ? `<span class="sub">${esc(role)}</span>` : ""}</td>
         <td><span class="badge ${t.trade_type}">${TYPE_LABEL[t.trade_type] || t.trade_type}</span></td>
+        <td class="num"><b>${fmtMoney(t.value, cur)}</b></td>
         <td class="num">${fmtNum(t.quantity)}</td>
         <td class="num">${fmtPrice(t.price, cur)}</td>
-        <td class="num">${fmtMoney(t.value, cur)}</td>
       </tr>`;
     }).join("");
+  }
+
+  // ----- companies view ----------------------------------------------------
+
+  let companyRows = [];
+
+  async function loadCompanies() {
+    const tbody = $("#companies tbody");
+    tbody.innerHTML = `<tr><td colspan="9" class="empty">Loading…</td></tr>`;
+    try {
+      companyRows = await api.companies();
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="9" class="empty">${esc(e.message)}</td></tr>`;
+      return;
+    }
+    renderCompanies();
+  }
+
+  function renderCompanies() {
+    const tbody = $("#companies tbody");
+    const k = state.csort, dir = state.corder === "asc" ? 1 : -1;
+    const rows = [...companyRows].sort((a, b) => {
+      const av = a[k], bv = b[k];
+      if (av == null && bv == null) return b.net_value - a.net_value;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      const c = typeof av === "number" ? av - bv : String(av).localeCompare(String(bv));
+      return c ? c * dir : b.net_value - a.net_value;
+    });
+    $$("#companies th.sortable").forEach((th) => {
+      th.classList.toggle("active", th.dataset.csort === state.csort);
+      th.classList.toggle("asc", th.dataset.csort === state.csort && state.corder === "asc");
+    });
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="9" class="empty">No companies match these filters.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = rows.map((r) => {
+      const cur = CURRENCY_DEFAULT[r.market];
+      const pct = r.net_pct_of_cap;
+      const strong = pct != null && Math.abs(pct) >= 0.005 ? "strong" : "";
+      const dirCls = pct != null && pct < 0 ? "down" : "";
+      return `<tr data-issuer="${esc(r.issuer)}" data-market="${r.market}">
+        <td>${esc(r.issuer)}${r.ticker ? `<span class="sub">${esc(r.ticker)}</span>` : ""}</td>
+        <td><span class="flag">${MARKET_LABEL[r.market] || r.market}</span></td>
+        <td class="num">${r.buy_value ? `${compact(r.buy_value)} ${cur}` : ""}<span class="sub">${r.buy_count || 0} buys</span></td>
+        <td class="num">${r.sell_value ? `${compact(r.sell_value)} ${cur}` : ""}<span class="sub">${r.sell_count || 0} sells</span></td>
+        <td class="num ${r.net_value > 0 ? "up" : r.net_value < 0 ? "down" : ""}">${r.net_value ? `${r.net_value > 0 ? "+" : ""}${compact(r.net_value)} ${cur}` : ""}</td>
+        <td class="num">${fmtNum(r.trade_count)}</td>
+        <td class="num">${fmtNum(r.insiders)}</td>
+        <td class="num">${r.market_cap ? `${compact(r.market_cap)} ${cur}` : "<span class=\"muted\">n/a</span>"}</td>
+        <td class="num pct ${strong} ${dirCls} ${pct > 0 ? "up" : pct < 0 ? "down" : ""}">${fmtPct(pct)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function setView(view) {
+    state.view = view;
+    $$(".seg button[data-view]").forEach((b) => b.classList.toggle("on", b.dataset.view === view));
+    $("#trades-view").hidden = view !== "trades";
+    $("#companies-view").hidden = view !== "companies";
+    $("#type").disabled = view === "companies";
+    if (view === "companies") loadCompanies(); else loadTrades();
+  }
+
+  function setIssuer(issuer) {
+    state.issuer = issuer || "";
+    $("#issuer-chip").hidden = !state.issuer;
+    $("#issuer-chip-name").textContent = state.issuer;
+    refresh();
   }
 
   // ----- summary tiles -----------------------------------------------------
@@ -331,18 +429,35 @@
   // ----- wiring ------------------------------------------------------------
 
   const debounce = (fn, ms) => { let h; return (...a) => { clearTimeout(h); h = setTimeout(() => fn(...a), ms); }; };
-  const refresh = () => { state.offset = 0; loadTrades(); loadSummary(); };
+  const refresh = () => {
+    state.offset = 0;
+    if (state.view === "companies") loadCompanies(); else loadTrades();
+    loadSummary();
+  };
 
-  $$(".seg button").forEach((b) => b.addEventListener("click", () => {
-    $$(".seg button").forEach((x) => x.classList.toggle("on", x === b));
+  $$(".seg button[data-market]").forEach((b) => b.addEventListener("click", () => {
+    $$(".seg button[data-market]").forEach((x) => x.classList.toggle("on", x === b));
     state.market = b.dataset.market; refresh();
   }));
+  $$(".seg button[data-view]").forEach((b) => b.addEventListener("click", () => setView(b.dataset.view)));
+  $$("#companies th.sortable").forEach((th) => th.addEventListener("click", () => {
+    const k = th.dataset.csort;
+    state.corder = state.csort === k && state.corder === "desc" ? "asc" : "desc";
+    state.csort = k; renderCompanies();
+  }));
+  $("#companies tbody").addEventListener("click", (e) => {
+    const tr = e.target.closest("tr[data-issuer]");
+    if (!tr) return;
+    setView("trades");
+    setIssuer(tr.dataset.issuer);
+  });
+  $("#issuer-clear").addEventListener("click", () => setIssuer(""));
   $("#type").addEventListener("change", (e) => { state.type = e.target.value; refresh(); });
   $("#q").addEventListener("input", debounce((e) => { state.q = e.target.value.trim(); refresh(); }, 250));
   $("#from").addEventListener("change", (e) => { state.from = e.target.value; refresh(); });
   $("#to").addEventListener("change", (e) => { state.to = e.target.value; refresh(); });
   $("#minv").addEventListener("change", (e) => { state.minv = e.target.value; refresh(); });
-  $$("th.sortable").forEach((th) => th.addEventListener("click", () => {
+  $$("#trades th.sortable").forEach((th) => th.addEventListener("click", () => {
     const s = th.dataset.sort;
     state.order = state.sort === s && state.order === "desc" ? "asc" : "desc";
     state.sort = s; state.offset = 0; loadTrades();

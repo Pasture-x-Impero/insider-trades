@@ -92,3 +92,95 @@ class PriceService:
             "last": meta.get("regularMarketPrice"),
             "points": points,
         }
+
+
+# --- quotes and market cap ----------------------------------------------------
+
+QUOTE_URL = "https://query1.finance.yahoo.com/v7/finance/quote"
+CRUMB_URL = "https://query1.finance.yahoo.com/v1/test/getcrumb"
+COOKIE_URL = "https://fc.yahoo.com"
+QUOTE_CACHE_SECONDS = 24 * 3600
+QUOTE_BATCH = 40
+BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0 Safari/537.36"
+)
+
+
+class QuoteService:
+    """Market cap and shares outstanding. Yahoo's quote endpoint needs a session cookie and a crumb."""
+
+    def __init__(self, client: httpx.Client, store: Store):
+        self.client = client
+        self.store = store
+        self._crumb: str | None = None
+
+    def _get_crumb(self) -> str | None:
+        if self._crumb:
+            return self._crumb
+        try:
+            self.client.get(COOKIE_URL, headers={"user-agent": BROWSER_UA})
+            r = self.client.get(CRUMB_URL, headers={"user-agent": BROWSER_UA})
+            r.raise_for_status()
+            crumb = r.text.strip()
+            if not crumb or "<" in crumb:
+                raise ValueError("empty crumb")
+            self._crumb = crumb
+        except (httpx.HTTPError, ValueError) as exc:
+            log.warning("yahoo crumb unavailable, market caps will be missing: %s", exc)
+            return None
+        return self._crumb
+
+    @staticmethod
+    def parse_quotes(data: dict) -> dict[str, dict]:
+        out: dict[str, dict] = {}
+        for q in (data.get("quoteResponse") or {}).get("result") or []:
+            symbol = q.get("symbol")
+            if not symbol:
+                continue
+            out[symbol] = {
+                "symbol": symbol,
+                "name": q.get("shortName") or q.get("longName"),
+                "currency": q.get("currency"),
+                "price": q.get("regularMarketPrice"),
+                "market_cap": q.get("marketCap"),
+                "shares_outstanding": q.get("sharesOutstanding"),
+            }
+        return out
+
+    def quotes(self, symbols: list[str]) -> dict[str, dict]:
+        """Return quote info per symbol, served from cache where fresh."""
+        result: dict[str, dict] = {}
+        missing: list[str] = []
+        for s in dict.fromkeys(symbols):
+            cached = self.store.cache_get(f"quote:{s}", QUOTE_CACHE_SECONDS)
+            if cached is not None:
+                if cached:
+                    result[s] = json.loads(cached)
+            else:
+                missing.append(s)
+        if not missing:
+            return result
+        crumb = self._get_crumb()
+        if not crumb:
+            return result
+        for i in range(0, len(missing), QUOTE_BATCH):
+            batch = missing[i:i + QUOTE_BATCH]
+            try:
+                r = self.client.get(
+                    QUOTE_URL,
+                    params={"symbols": ",".join(batch), "crumb": crumb,
+                            "fields": "shortName,longName,currency,regularMarketPrice,marketCap,sharesOutstanding"},
+                    headers={"user-agent": BROWSER_UA},
+                )
+                r.raise_for_status()
+                parsed = self.parse_quotes(r.json())
+            except (httpx.HTTPError, ValueError) as exc:
+                log.warning("quote lookup failed for %d symbols: %s", len(batch), exc)
+                continue
+            for s in batch:
+                q = parsed.get(s)
+                self.store.cache_put(f"quote:{s}", json.dumps(q) if q else "")
+                if q:
+                    result[s] = q
+        return result
