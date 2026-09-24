@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insider Trades</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%232a78d6%27/%3E%3Cpath d=%27M7 22l6-7 5 4 7-9%27 fill=%27none%27 stroke=%27white%27 stroke-width=%273%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Insider Trades</h1>
+    <span class="sub">Oslo Børs and Nasdaq Stockholm</span>
+  </div>
+  <div class="sync">
+    <span id="sync-status" class="muted">Loading…</span>
+    <button id="sync-btn" type="button">Sync now</button>
+  </div>
+</header>
+
+<main>
+  <section class="filters" aria-label="Filters">
+    <div class="seg" role="group" aria-label="Market">
+      <button data-market="" class="on" type="button">All</button>
+      <button data-market="NO" type="button">Norway</button>
+      <button data-market="SE" type="button">Sweden</button>
+    </div>
+    <select id="type" aria-label="Trade type">
+      <option value="">All types</option>
+      <option value="buy">Buy</option>
+      <option value="sell">Sell</option>
+      <option value="option_exercise">Option exercise</option>
+      <option value="allotment">Allotment</option>
+      <option value="other">Other</option>
+      <option value="unknown">Unparsed</option>
+    </select>
+    <input id="q" type="search" placeholder="Company, ticker or insider" aria-label="Search">
+    <label>From <input id="from" type="date"></label>
+    <label>To <input id="to" type="date"></label>
+    <label>Min value <input id="minv" type="number" min="0" step="100000" placeholder="0"></label>
+  </section>
+
+  <section class="tiles" id="tiles" aria-label="Summary"></section>
+
+  <section class="table-wrap">
+    <table id="trades">
+      <thead>
+        <tr>
+          <th data-sort="published_at" class="sortable">Published</th>
+          <th>Market</th>
+          <th data-sort="issuer" class="sortable">Company</th>
+          <th>Insider</th>
+          <th>Type</th>
+          <th data-sort="quantity" class="sortable num">Quantity</th>
+          <th data-sort="price" class="sortable num">Price</th>
+          <th data-sort="value" class="sortable num">Value</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="pager">
+      <span id="count" class="muted"></span>
+      <div>
+        <button id="prev" type="button">Previous</button>
+        <button id="next" type="button">Next</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<aside id="detail" class="detail" hidden aria-label="Trade details">
+  <button id="close" class="close" type="button" aria-label="Close">×</button>
+  <div id="detail-body"></div>
+</aside>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

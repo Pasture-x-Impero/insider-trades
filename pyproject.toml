@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "insider-trades"
+version = "0.1.0"
+description = "Tracker for insider trades on Oslo Børs and Nasdaq Stockholm"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "httpx>=0.27",
+    "pydantic>=2.6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.4"]
+
+[project.scripts]
+insider-trades = "insider_trades.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["insider_trades*"]
+
+[tool.setuptools.package-data]
+insider_trades = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# Explicit so lint results do not change when ruff changes its defaults.
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "SIM"]
+ignore = ["B008"]  # FastAPI Query() defaults in signatures

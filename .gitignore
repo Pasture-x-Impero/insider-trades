@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+*.db
+*.db-journal
+.pytest_cache/
+.ruff_cache/
+.env
+
+# default output of `insider-trades render`
+insider-trades.html
+site/

@@ -1,0 +1,42 @@
+{
+  "header": {
+    "OB_REQUEST_ID": "893e380a-441d-492c-87b8-0e10c3b62b9c",
+    "result.val": 0,
+    "http.code": 200,
+    "result.text": "OK"
+  },
+  "data": {
+    "message": {
+      "id": 654802,
+      "messageId": 654802,
+      "newsId": 607081,
+      "title": "Arribatec Group ASA: Mandatory notification of trade",
+      "body": "Kjølvik Invest AS, a company wholly owned by the CEO, Ole Jakob Kjølvik, has today (September 05, 2025) acquired 85 226 shares in the company at a share price of NOK0.64. Following this transaction, Kjølvik Invest AS holds a total of 556 342 shares.\n\nFor further information, please contact: Ole Jakob Kjølvik, CEO, Arribatec Group ASA: +47 915 98 935 \n\nThis information is subject to the disclosure requirements pursuant to Section 5-12 the Norwegian Securities Trading Act. \n\nAbout Arribatec | www.arribatec.com Arribatec is a software and consulting company headquartered in Oslo. With a customer-centric engagement model combined with a deep system, integration, and domain competence, Arribatec builds long-term strategic partnerships with a broad customer base. Arribatec serves more than 1700 companies spread over 25 countries and various industries in the private and public sectors. The company employs over 320 people with offices in 11 countries and is listed on the Oslo Stock Exchange under the ticker code ARR.",
+      "category": [
+        {
+          "id": 1102,
+          "category_no": "MELDEPLIKTIG HANDEL FOR PRIMÆRINNSIDERE",
+          "category_en": "MANDATORY NOTIFICATION OF TRADE PRIMARY INSIDERS"
+        }
+      ],
+      "markets": [
+        "XOSL"
+      ],
+      "issuerId": 6806,
+      "correctionForMessageId": 0,
+      "correctedByMessageId": 0,
+      "issuerSign": "ARR",
+      "issuerName": "Arribatec Group ASA",
+      "instrId": 2163627,
+      "instrumentName": "ARR",
+      "instrumentFullName": "ARRIBATEC GROUP",
+      "publishedTime": "2025-09-05T12:45:11.577Z",
+      "test": false,
+      "numbAttachments": 0,
+      "attachments": [],
+      "clientAnnouncementId": "82aa3da4-aa10-4073-a666-89efa17b99e7",
+      "infoRequired": 1,
+      "oamMandatory": 0
+    }
+  }
+}
