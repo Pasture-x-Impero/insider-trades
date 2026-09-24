@@ -13,7 +13,7 @@ import io
 import logging
 import re
 import unicodedata
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from urllib.parse import quote_plus
 
 import httpx
@@ -24,6 +24,8 @@ from ..parsers.numbers import parse_number
 log = logging.getLogger(__name__)
 
 EXPORT_URL = "https://marknadssok.fi.se/publiceringsklient/en-GB/Search/Search"
+EXPORT_CAP = 1000  # the export returns at most this many rows; larger windows are split
+WINDOW_DAYS = 14
 PUBLIC_URL = "https://marknadssok.fi.se/publiceringsklient/en-GB/Search/Search?SearchFunctionType=Insyn&Utgivare={issuer}"
 
 # Normalised header -> field. Normalisation strips accents, case and punctuation.
@@ -138,8 +140,9 @@ def row_to_trade(row: dict) -> Trade | None:
     close = normalise(row.get("close", "")) in YES_WORDS
     key = "|".join(
         row.get(k, "") for k in (
-            "published", "issuer", "pdmr", "notifier", "transaction_date", "instrument",
-            "isin", "nature", "volume", "price", "status",
+            "published", "issuer", "lei", "pdmr", "notifier", "position", "close",
+            "transaction_date", "instrument", "instrument_type", "isin", "nature",
+            "volume", "unit", "price", "currency", "venue", "status", "details",
         )
     )
     source_id = hashlib.sha1(key.encode("utf-8")).hexdigest()[:20]
@@ -197,8 +200,30 @@ class FinansinspektionenSource:
             )
         return decode_export(r.content)
 
-    def fetch(self, since: date) -> list[Trade]:
-        rows = parse_export(self.download(since))
+    def fetch_rows(self, since: date, until: date) -> list[dict]:
+        """Rows published in [since, until]. Windows that hit the export cap are split."""
+        rows = parse_export(self.download(since, until))
+        if len(rows) < EXPORT_CAP or since == until:
+            if len(rows) >= EXPORT_CAP:
+                log.warning("finansinspektionen: %s alone hits the export cap; some rows may be missing", since)
+            return rows
+        mid = since + (until - since) / 2
+        log.info("finansinspektionen: %s..%s hit the export cap, splitting", since, until)
+        return self.fetch_rows(since, mid) + self.fetch_rows(mid + timedelta(days=1), until)
+
+    def fetch(self, since: date, until: date | None = None) -> list[Trade]:
+        until = until or datetime.now(UTC).date()
+        rows: list[dict] = []
+        start = since
+        while start <= until:
+            end = min(start + timedelta(days=WINDOW_DAYS - 1), until)
+            rows.extend(self.fetch_rows(start, end))
+            start = end + timedelta(days=1)
         log.info("finansinspektionen: %d rows since %s", len(rows), since)
-        trades = [t for t in (row_to_trade(r) for r in rows) if t]
+        seen: set[str] = set()
+        trades: list[Trade] = []
+        for t in (row_to_trade(r) for r in rows):
+            if t and t.source_id not in seen:
+                seen.add(t.source_id)
+                trades.append(t)
         return trades
