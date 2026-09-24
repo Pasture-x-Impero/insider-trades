@@ -89,3 +89,37 @@ def test_fi_swedish_headers_and_utf8():
     assert t.trade_type is TradeType.BUY
     assert t.position == "VD"
     assert t.close_associate is False
+
+
+def test_fi_fetch_splits_windows_that_hit_the_cap():
+    """A window returning EXPORT_CAP rows is split until every piece is under the cap."""
+    import httpx
+
+    from insider_trades.sources import finansinspektionen as fi
+
+    header = (
+        "Publication date;Issuer;Person discharging managerial responsibilities;Nature of transaction;"
+        "Instrument name;ISIN;Transaction date;Volume;Price;Currency;Status\n"
+    )
+    calls = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        frm = request.url.params["Publiceringsdatum.From"]
+        to = request.url.params["Publiceringsdatum.To"]
+        calls.append((frm, to))
+        days = (date.fromisoformat(to) - date.fromisoformat(frm)).days + 1
+        # Pretend the register has 300 rows per day, so anything over 3 days hits the cap.
+        n = min(fi.EXPORT_CAP, 300 * days)
+        rows = "".join(
+            f"{frm} 10:00:00;Issuer {i};Person {i};Acquisition;Share;SE000{i:07d};{frm};1;1;SEK;Current\n"
+            for i in range(n)
+        )
+        return httpx.Response(200, content=(header + rows).encode("utf-8"), headers={"content-type": "text/csv"})
+
+    src = fi.FinansinspektionenSource(httpx.Client(transport=httpx.MockTransport(handler)))
+    trades = src.fetch(date(2025, 9, 1), date(2025, 9, 14))
+    assert calls[0] == ("2025-09-01", "2025-09-14")
+    assert len(calls) > 1
+    # Every leaf window is under the cap, so all 14 days x 300 rows come back.
+    assert len(trades) == 14 * 300
+    assert len({t.source_id for t in trades}) == len(trades)

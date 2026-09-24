@@ -81,6 +81,21 @@ def main(argv: list[str] | None = None) -> int:
             out = render_to_file(store, Path(args.out), query, prices)
         items, _ = store.query(query)
         print(f"wrote {out} with {len(items)} trades")
+        for market in Market:
+            rows = [t for t in items if t.market is market]
+            if not rows:
+                continue
+            by_type = {}
+            for t in rows:
+                by_type[t.trade_type.value] = by_type.get(t.trade_type.value, 0) + 1
+            n = len(rows)
+            print(
+                f"{market.value}: {n} trades, types={by_type}, "
+                f"quantity={sum(t.quantity is not None for t in rows)}/{n}, "
+                f"price={sum(t.price is not None for t in rows)}/{n}, "
+                f"insider={sum(bool(t.insider_name) for t in rows)}/{n}, "
+                f"text={sum(bool(t.raw_text) for t in rows)}/{n}"
+            )
         return 0
 
     if args.command == "serve":
