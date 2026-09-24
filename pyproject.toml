@@ -34,3 +34,8 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+
+[tool.ruff.lint]
+# Explicit so lint results do not change when ruff changes its defaults.
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "SIM"]
+ignore = ["B008"]  # FastAPI Query() defaults in signatures

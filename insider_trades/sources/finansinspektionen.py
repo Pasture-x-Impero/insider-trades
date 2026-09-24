@@ -13,8 +13,8 @@ import io
 import logging
 import re
 import unicodedata
+from datetime import UTC, date, datetime
 from urllib.parse import quote_plus
-from datetime import date, datetime, timezone
 
 import httpx
 
@@ -109,11 +109,11 @@ def _datetime(s: str) -> datetime | None:
     s = s.strip()
     for fmt in ("%Y-%m-%d %H:%M:%S", "%d/%m/%Y %H:%M:%S", "%Y-%m-%dT%H:%M:%S"):
         try:
-            return datetime.strptime(s[:19], fmt).replace(tzinfo=timezone.utc)
+            return datetime.strptime(s[:19], fmt).replace(tzinfo=UTC)
         except ValueError:
             continue
     d = _date(s)
-    return datetime(d.year, d.month, d.day, tzinfo=timezone.utc) if d else None
+    return datetime(d.year, d.month, d.day, tzinfo=UTC) if d else None
 
 
 def classify(nature: str, details: str, instrument_type: str) -> TradeType:

@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Iterator
 
 from .models import Market, StoredTrade, Trade, TradeType
 
@@ -96,7 +96,7 @@ SORTABLE = {"published_at", "transaction_date", "issuer", "value", "quantity", "
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 class Store:
@@ -286,7 +286,7 @@ class Store:
             row = c.execute("SELECT payload, cached_at FROM price_cache WHERE key=?", (key,)).fetchone()
         if not row:
             return None
-        age = datetime.now(timezone.utc) - datetime.fromisoformat(row["cached_at"])
+        age = datetime.now(UTC) - datetime.fromisoformat(row["cached_at"])
         return row["payload"] if age.total_seconds() < max_age_seconds else None
 
     def cache_put(self, key: str, payload: str) -> None:

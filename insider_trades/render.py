@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import httpx
@@ -51,7 +51,7 @@ def render_html(store: Store, query: TradeQuery, prices: PriceService | None = N
     price_series = collect_prices(store, trades, prices) if prices else {}
     summary = store.summary(TradeQuery())
     payload = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "total_in_store": total,
         "last_sync": summary["last_sync"],
         "trades": trades,

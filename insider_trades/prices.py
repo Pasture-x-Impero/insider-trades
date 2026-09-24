@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 import httpx
 
@@ -58,8 +58,8 @@ class PriceService:
         cached = self.store.cache_get(key, CACHE_SECONDS)
         if cached:
             return json.loads(cached)
-        period1 = int(datetime(start.year, start.month, start.day, tzinfo=timezone.utc).timestamp())
-        period2 = int((datetime(end.year, end.month, end.day, tzinfo=timezone.utc) + timedelta(days=1)).timestamp())
+        period1 = int(datetime(start.year, start.month, start.day, tzinfo=UTC).timestamp())
+        period2 = int((datetime(end.year, end.month, end.day, tzinfo=UTC) + timedelta(days=1)).timestamp())
         r = self.client.get(
             CHART_URL.format(symbol=symbol),
             params={"period1": period1, "period2": period2, "interval": "1d", "events": "div,splits"},
@@ -80,8 +80,8 @@ class PriceService:
         quote = ((res.get("indicators") or {}).get("quote") or [{}])[0]
         closes = quote.get("close") or []
         points = [
-            {"date": datetime.fromtimestamp(ts, tz=timezone.utc).date().isoformat(), "close": round(c, 4)}
-            for ts, c in zip(stamps, closes)
+            {"date": datetime.fromtimestamp(ts, tz=UTC).date().isoformat(), "close": round(c, 4)}
+            for ts, c in zip(stamps, closes, strict=False)
             if c is not None
         ]
         meta = res.get("meta") or {}

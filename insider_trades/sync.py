@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 import httpx
 
@@ -42,7 +42,7 @@ def since_for(store: Store, market: Market, settings: Settings, override: date |
 
 def sync_market(store: Store, market: Market, settings: Settings,
                 client: httpx.Client | None = None, since: date | None = None) -> SyncResult:
-    started = datetime.now(timezone.utc)
+    started = datetime.now(UTC)
     own_client = client is None
     client = client or make_client(settings)
     try:

@@ -49,7 +49,7 @@ class Trade(BaseModel):
     parse_confidence: float = Field(default=1.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
-    def _derive_value(self) -> "Trade":
+    def _derive_value(self) -> Trade:
         if self.value is None and self.quantity is not None and self.price is not None:
             self.value = round(self.quantity * self.price, 2)
         return self

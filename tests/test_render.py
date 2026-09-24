@@ -1,6 +1,6 @@
 import json
 import re
-from datetime import date
+from datetime import UTC, date
 
 from insider_trades.cli import main
 from insider_trades.prices import PriceService
@@ -43,11 +43,11 @@ def test_render_without_prices_and_filters(store, settings, client):
 
 
 def test_render_escapes_closing_script_tags(store, settings, client):
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     from insider_trades.models import Market, Trade
 
-    store.upsert([Trade(market=Market.NORWAY, source_id="x", published_at=datetime.now(timezone.utc),
+    store.upsert([Trade(market=Market.NORWAY, source_id="x", published_at=datetime.now(UTC),
                         issuer="Evil ASA", raw_text="</script><script>alert(1)</script>")])
     html = render_html(store, TradeQuery())
     body = html.split('id="insider-data"', 1)[1]

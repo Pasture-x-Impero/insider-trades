@@ -12,11 +12,10 @@ from pathlib import Path
 import httpx
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from tests.conftest import fake_handler  # noqa: E402
-
 from insider_trades.config import Settings  # noqa: E402
 from insider_trades.store import Store  # noqa: E402
 from insider_trades.sync import sync_all  # noqa: E402
+from tests.conftest import fake_handler  # noqa: E402
 
 settings = Settings.from_env()
 store = Store(settings.db_path)

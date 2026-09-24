@@ -18,7 +18,7 @@ class Settings:
     user_agent: str
 
     @classmethod
-    def from_env(cls) -> "Settings":
+    def from_env(cls) -> Settings:
         return cls(
             db_path=Path(os.environ.get("INSIDER_DB", "insider_trades.db")),
             sync_on_startup=os.environ.get("INSIDER_SYNC_ON_STARTUP", "1") not in ("0", "false"),

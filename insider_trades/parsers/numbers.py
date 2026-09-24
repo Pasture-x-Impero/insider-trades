@@ -34,9 +34,8 @@ def parse_number(text: str) -> float | None:
             s = s.replace(",", "")
     elif "," in s:
         s = s.replace(",", "") if _THOUSANDS_COMMA.match(s) else s.replace(",", ".")
-    elif "." in s:
-        if _THOUSANDS_DOT.match(s):
-            s = s.replace(".", "")
+    elif "." in s and _THOUSANDS_DOT.match(s):
+        s = s.replace(".", "")
     try:
         return float(s)
     except ValueError:

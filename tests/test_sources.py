@@ -2,7 +2,9 @@ from datetime import date
 
 from insider_trades.models import Market, TradeType
 from insider_trades.sources.finansinspektionen import (
-    FinansinspektionenSource, decode_export, parse_export,
+    FinansinspektionenSource,
+    decode_export,
+    parse_export,
 )
 from insider_trades.sources.oslo_bors import OsloBorsSource
 

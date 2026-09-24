@@ -160,9 +160,7 @@ def _valid_name(name: str, issuer: str) -> bool:
         return False
     if len(name.split()) < 2 or len(name) > 60:
         return False
-    if issuer and name.lower() in issuer.lower():
-        return False
-    return True
+    return not (issuer and name.lower() in issuer.lower())
 
 
 def _position(text: str) -> str | None:
