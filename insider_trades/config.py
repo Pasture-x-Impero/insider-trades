@@ -25,7 +25,7 @@ class Settings:
             sync_interval_minutes=int(os.environ.get("INSIDER_SYNC_INTERVAL_MINUTES", "30")),
             initial_lookback_days=int(os.environ.get("INSIDER_LOOKBACK_DAYS", "60")),
             http_timeout=float(os.environ.get("INSIDER_HTTP_TIMEOUT", "20")),
-            max_detail_fetch=int(os.environ.get("INSIDER_MAX_DETAIL_FETCH", "200")),
+            max_detail_fetch=int(os.environ.get("INSIDER_MAX_DETAIL_FETCH", "1000")),
             user_agent=os.environ.get(
                 "INSIDER_USER_AGENT",
                 "insider-trades/0.1 (+https://github.com/pasture-x-impero/insider-trades)",

@@ -13,6 +13,7 @@ import io
 import logging
 import re
 import unicodedata
+from collections import Counter
 from datetime import UTC, date, datetime, timedelta
 from urllib.parse import quote_plus
 
@@ -220,6 +221,11 @@ class FinansinspektionenSource:
             rows.extend(self.fetch_rows(start, end))
             start = end + timedelta(days=1)
         log.info("finansinspektionen: %d rows since %s", len(rows), since)
+        natures = Counter(r.get("nature", "") for r in rows)
+        unmapped = {k: v for k, v in natures.items() if normalise(k) not in NATURE}
+        log.info("finansinspektionen: nature values %s", dict(natures.most_common(12)))
+        if unmapped:
+            log.warning("finansinspektionen: unmapped nature values (classified as other): %s", unmapped)
         seen: set[str] = set()
         trades: list[Trade] = []
         for t in (row_to_trade(r) for r in rows):
