@@ -16,7 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from . import __version__
 from .config import Settings
 from .models import Market, TradeType
-from .prices import PriceService
+from .prices import PriceService, QuoteService
 from .store import Store, TradeQuery
 from .sync import make_client, sync_all
 
@@ -30,6 +30,7 @@ def create_app(settings: Settings | None = None, store: Store | None = None,
     store = store or Store(settings.db_path)
     client = client or make_client(settings)
     prices = PriceService(client, store)
+    quotes = QuoteService(client, store)
     sync_lock = asyncio.Lock()
 
     async def run_sync(markets: list[Market] | None = None, since: date | None = None) -> dict:
@@ -112,6 +113,28 @@ def create_app(settings: Settings | None = None, store: Store | None = None,
         query = TradeQuery(market=market, trade_type=type, text=q, issuer=issuer,
                            date_from=date_from, date_to=date_to, min_value=min_value)
         return store.summary(query)
+
+    @app.get("/api/companies")
+    def companies(
+        market: Market | None = None,
+        q: str | None = Query(default=None, max_length=100),
+        date_from: date | None = Query(default=None, alias="from"),
+        date_to: date | None = Query(default=None, alias="to"),
+        min_value: float | None = None,
+        with_caps: bool = True,
+    ):
+        query = TradeQuery(market=market, text=q, date_from=date_from, date_to=date_to, min_value=min_value)
+        rows = store.companies(query)
+        for r in rows:
+            r["symbol"] = prices.resolve_symbol(Market(r["market"]), r["ticker"], r["isin"], r["issuer"]) \
+                if with_caps else None
+        info = quotes.quotes([r["symbol"] for r in rows if r["symbol"]]) if with_caps else {}
+        for r in rows:
+            qi = info.get(r["symbol"] or "")
+            r["market_cap"] = qi.get("market_cap") if qi else None
+            r["net_pct_of_cap"] = (r["net_value"] / r["market_cap"]) if qi and r["market_cap"] else None
+        rows.sort(key=lambda r: (r["net_pct_of_cap"] is None, -(r["net_pct_of_cap"] or 0), -r["net_value"]))
+        return rows
 
     @app.get("/api/issuers")
     def issuers(q: str = Query(default="", max_length=100), limit: int = Query(default=20, le=100)):

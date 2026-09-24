@@ -73,6 +73,12 @@ td .sub { display: block; color: var(--muted); font-size: 12px; white-space: nor
 .badge.option_exercise, .badge.allotment { color: var(--neutral); }
 .badge.other, .badge.unknown { color: var(--muted); }
 .flag { font-size: 12px; font-weight: 600; color: var(--text-2); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px; border: 1px solid var(--accent); border-radius: 999px; color: var(--accent); font-weight: 600; }
+.chip button { border: 0; padding: 0 4px; color: inherit; background: transparent; font-size: 16px; line-height: 1; }
+.hint { padding: 10px 12px 0; margin: 0; font-size: 13px; }
+td.pct { font-weight: 600; }
+td.pct.strong { background: color-mix(in srgb, var(--buy) 14%, transparent); }
+td.pct.strong.down { background: color-mix(in srgb, var(--sell) 14%, transparent); }
 .pager { display: flex; justify-content: space-between; align-items: center; padding: 10px; }
 .pager div { display: flex; gap: 8px; }
 .detail {
@@ -109,5 +115,6 @@ td .sub { display: block; color: var(--muted); font-size: 12px; white-space: nor
 @media (max-width: 720px) {
   .topbar { flex-direction: column; align-items: flex-start; }
   .detail dl { grid-template-columns: 1fr; }
-  th:nth-child(6), td:nth-child(6), th:nth-child(7), td:nth-child(7) { display: none; }
+  #trades th:nth-child(7), #trades td:nth-child(7), #trades th:nth-child(8), #trades td:nth-child(8) { display: none; }
+  #companies th:nth-child(6), #companies td:nth-child(6), #companies th:nth-child(7), #companies td:nth-child(7) { display: none; }
 }
