@@ -53,9 +53,44 @@ HEADERS = {
     "details": "details", "detaljer": "details",
 }
 
+# "Nature of transaction" values seen in the live export (English site), with the Swedish
+# site's wording where known. Keys are normalised (accents and punctuation stripped, lower case).
 NATURE = {
+    # market purchases and sales
     "acquisition": TradeType.BUY, "forvarv": TradeType.BUY,
     "disposal": TradeType.SELL, "avyttring": TradeType.SELL,
+    # subscribing for new shares in an issue is a purchase
+    "subscription": TradeType.BUY, "teckning": TradeType.BUY,
+    # share programmes
+    "allotment": TradeType.ALLOTMENT, "tilldelning": TradeType.ALLOTMENT,
+    # option, warrant and convertible exercise; "increase" is the shares received,
+    # "decrease" the instruments given up
+    "exercise increase": TradeType.OPTION_EXERCISE, "exercise decrease": TradeType.OPTION_EXERCISE,
+    "losen okning": TradeType.OPTION_EXERCISE, "losen minskning": TradeType.OPTION_EXERCISE,
+    "conversion increase": TradeType.OPTION_EXERCISE, "conversion decrease": TradeType.OPTION_EXERCISE,
+    "konvertering okning": TradeType.OPTION_EXERCISE, "konvertering minskning": TradeType.OPTION_EXERCISE,
+    # everything below moves shares without a market trade
+    "internal transaction acquisition": TradeType.OTHER, "internal transaction disposal": TradeType.OTHER,
+    "intern transaktion forvarv": TradeType.OTHER, "intern transaktion avyttring": TradeType.OTHER,
+    "exchange increase": TradeType.OTHER, "exchange decrease": TradeType.OTHER,
+    "byte okning": TradeType.OTHER, "byte minskning": TradeType.OTHER,
+    "loan granted": TradeType.OTHER, "loan received": TradeType.OTHER,
+    "return of loan increase": TradeType.OTHER, "return of loan decrease": TradeType.OTHER,
+    "lan lamnat": TradeType.OTHER, "lan mottaget": TradeType.OTHER,
+    "aterlamning av lan okning": TradeType.OTHER, "aterlamning av lan minskning": TradeType.OTHER,
+    "gift received": TradeType.OTHER, "gift given": TradeType.OTHER,
+    "gava mottagen": TradeType.OTHER, "gava given": TradeType.OTHER,
+    "inheritance received": TradeType.OTHER, "arv mottaget": TradeType.OTHER,
+    "division of joint property between spouses increase": TradeType.OTHER,
+    "division of joint property between spouses decrease": TradeType.OTHER,
+    "bodelning okning": TradeType.OTHER, "bodelning minskning": TradeType.OTHER,
+    "demerger increase": TradeType.OTHER, "demerger decrease": TradeType.OTHER,
+    "delning okning": TradeType.OTHER, "delning minskning": TradeType.OTHER,
+    "issue of instrument": TradeType.OTHER, "emission av instrument": TradeType.OTHER,
+    "dividend received": TradeType.OTHER, "dividend distributed": TradeType.OTHER,
+    "utdelning mottagen": TradeType.OTHER, "utdelning lamnad": TradeType.OTHER,
+    "pledging": TradeType.OTHER, "pantsattning": TradeType.OTHER,
+    "redemption": TradeType.OTHER, "inlosen": TradeType.OTHER,
 }
 EXERCISE_WORDS = re.compile(r"exercise|utnyttjande|losen|inlosen", re.I)
 ALLOTMENT_WORDS = re.compile(r"allot|tilldeln|share saving|aktiesparprogram|incentive|incitament|vesting|gift|gava", re.I)

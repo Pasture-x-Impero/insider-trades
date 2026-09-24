@@ -123,3 +123,30 @@ def test_fi_fetch_splits_windows_that_hit_the_cap():
     # Every leaf window is under the cap, so all 14 days x 300 rows come back.
     assert len(trades) == 14 * 300
     assert len({t.source_id for t in trades}) == len(trades)
+
+
+def test_fi_nature_mapping_covers_live_values():
+    """Every nature value seen in the live export maps to a type, none fall through to other by accident."""
+    from insider_trades.sources.finansinspektionen import classify
+
+    live = {
+        "Acquisition": TradeType.BUY, "Disposal": TradeType.SELL, "Subscription": TradeType.BUY,
+        "Allotment": TradeType.ALLOTMENT, "Exercise decrease": TradeType.OPTION_EXERCISE,
+        "Exercise increase": TradeType.OPTION_EXERCISE, "Conversion increase": TradeType.OPTION_EXERCISE,
+        "Internal transaction – Acquisition": TradeType.OTHER, "Internal transaction – Disposal": TradeType.OTHER,
+        "Exchange increase": TradeType.OTHER, "Exchange decrease": TradeType.OTHER,
+        "Return of loan increase": TradeType.OTHER, "Return of loan decrease": TradeType.OTHER,
+        "Loan granted": TradeType.OTHER, "Loan received": TradeType.OTHER,
+        "Gift received": TradeType.OTHER, "Gift given": TradeType.OTHER, "Inheritance received": TradeType.OTHER,
+        "Demerger increase": TradeType.OTHER, "Issue of instrument": TradeType.OTHER,
+        "Dividend distributed": TradeType.OTHER, "Dividend received": TradeType.OTHER,
+        "Division of joint property between spouses decrease": TradeType.OTHER, "Pledging": TradeType.OTHER,
+        # Swedish site wording
+        "Förvärv": TradeType.BUY, "Avyttring": TradeType.SELL, "Teckning": TradeType.BUY,
+        "Tilldelning": TradeType.ALLOTMENT, "Lösen ökning": TradeType.OPTION_EXERCISE,
+        "Pantsättning": TradeType.OTHER,
+    }
+    for nature, expected in live.items():
+        assert classify(nature, "", "") is expected, nature
+    assert classify("Something new", "", "") is TradeType.OTHER
+    assert classify("", "", "") is TradeType.UNKNOWN
