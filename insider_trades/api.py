@@ -16,7 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from . import __version__
 from .config import Settings
 from .models import Market, TradeType
-from .prices import PriceService, QuoteService
+from .prices import MARKET_CURRENCY, PriceService, QuoteService
 from .store import Store, TradeQuery
 from .sync import make_client, sync_all
 
@@ -131,8 +131,11 @@ def create_app(settings: Settings | None = None, store: Store | None = None,
         info = quotes.quotes([r["symbol"] for r in rows if r["symbol"]]) if with_caps else {}
         for r in rows:
             qi = info.get(r["symbol"] or "")
-            r["market_cap"] = qi.get("market_cap") if qi else None
-            r["net_pct_of_cap"] = (r["net_value"] / r["market_cap"]) if qi and r["market_cap"] else None
+            # Only a market cap in the trade currency gives a meaningful share.
+            usable = bool(qi and qi.get("market_cap") and qi.get("currency") == MARKET_CURRENCY[Market(r["market"])])
+            r["market_cap"] = qi["market_cap"] if usable else None
+            r["market_cap_currency"] = qi.get("currency") if qi else None
+            r["net_pct_of_cap"] = (r["net_value"] / r["market_cap"]) if usable else None
         rows.sort(key=lambda r: (r["net_pct_of_cap"] is None, -(r["net_pct_of_cap"] or 0), -r["net_value"]))
         return rows
 

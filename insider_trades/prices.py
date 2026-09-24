@@ -17,6 +17,7 @@ CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
 SEARCH_URL = "https://query2.finance.yahoo.com/v1/finance/search"
 EXCHANGE_SUFFIX = {Market.NORWAY: ".OL", Market.SWEDEN: ".ST"}
 PREFERRED_EXCHANGE = {Market.NORWAY: "OSL", Market.SWEDEN: "STO"}
+MARKET_CURRENCY = {Market.NORWAY: "NOK", Market.SWEDEN: "SEK"}
 CACHE_SECONDS = 6 * 3600
 SYMBOL_CACHE_SECONDS = 30 * 24 * 3600
 
@@ -43,8 +44,10 @@ class PriceService:
             r.raise_for_status()
             quotes = r.json().get("quotes", [])
             equities = [q for q in quotes if q.get("quoteType") == "EQUITY" and q.get("symbol")]
+            suffix = EXCHANGE_SUFFIX[market]
             preferred = [q for q in equities if q.get("exchange") == PREFERRED_EXCHANGE[market]]
-            chosen = (preferred or equities or [None])[0]
+            home = [q for q in equities if str(q.get("symbol", "")).endswith(suffix)]
+            chosen = (preferred or home or equities or [None])[0]
             symbol = chosen["symbol"] if chosen else ""
         except (httpx.HTTPError, ValueError, KeyError) as exc:
             log.warning("symbol lookup failed for %s: %s", query, exc)
