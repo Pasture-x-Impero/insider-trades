@@ -45,8 +45,12 @@ def test_api_companies_with_market_cap(settings, store, client):
         assert arr["symbol"] == "ARR.OL" and arr["market_cap"] == 5_000_000
         assert abs(arr["net_pct_of_cap"] - 54544.64 / 5_000_000) < 1e-9
         assert rows[0]["issuer"] == "Arribatec Group ASA"  # highest net share of market cap first
-        # The mocked symbol search answers VOLV-B.ST for every ISIN, so Investor gets a cap too.
+        # The mocked symbol search answers VOLV-B.ST for most ISINs, so Investor gets a cap too.
         assert by["Investor AB"]["net_pct_of_cap"] < 0
+        # Sinch only resolves to a Toronto listing priced in CAD: the cap must not be used.
+        sinch = by["Sinch AB"]
+        assert sinch["symbol"] == "LUG.TO" and sinch["market_cap"] is None
+        assert sinch["market_cap_currency"] == "CAD" and sinch["net_pct_of_cap"] is None
         assert c.get("/api/companies", params={"market": "NO"}).json()[0]["market"] == "NO"
 
 
@@ -56,3 +60,11 @@ def test_render_embeds_quotes(store, settings, client):
     data = extract_data(html)
     assert data["quotes"]["ARR.OL"]["market_cap"] == 5_000_000
     assert data["quotes"]["VOLV-B.ST"]["market_cap"] == 560_000_000_000
+
+
+def test_resolve_symbol_prefers_home_exchange(store, client):
+    ps = PriceService(client, store)
+    # Search returns a Toronto listing first and a Stockholm one second; Stockholm wins for Sweden.
+    assert ps.resolve_symbol(Market.SWEDEN, None, "SE0000115446") == "VOLV-B.ST"
+    # For Norway neither is OSL or .OL, so the first equity is the fallback.
+    assert ps.resolve_symbol(Market.NORWAY, None, "NO0000000000") == "LUG.TO"

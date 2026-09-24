@@ -49,11 +49,18 @@ def fake_handler(request: httpx.Request) -> httpx.Response:
                        "regularMarketPrice": 0.7, "marketCap": 5_000_000, "sharesOutstanding": 7_142_857},
             "VOLV-B.ST": {"symbol": "VOLV-B.ST", "shortName": "Volvo B", "currency": "SEK",
                           "regularMarketPrice": 281.5, "marketCap": 560_000_000_000},
+            "LUG.TO": {"symbol": "LUG.TO", "shortName": "Lundin Gold", "currency": "CAD",
+                       "regularMarketPrice": 40.0, "marketCap": 9_000_000_000},
         }
         return httpx.Response(200, json={"quoteResponse": {"result": [known[s] for s in wanted if s in known],
                                                              "error": None}})
     if "finance/search" in url:
+        q = request.url.params.get("q", "")
+        if q == "SE0016101844":  # Sinch in the fixture: pretend only a Toronto listing is known
+            return httpx.Response(200, json={"quotes": [
+                {"symbol": "LUG.TO", "quoteType": "EQUITY", "exchange": "TOR"}]})
         return httpx.Response(200, json={"quotes": [
+            {"symbol": "LUG.TO", "quoteType": "EQUITY", "exchange": "TOR"},
             {"symbol": "VOLV-B.ST", "quoteType": "EQUITY", "exchange": "STO"}]})
     if "finance/chart" in url:
         return httpx.Response(200, json={"chart": {"result": [{

@@ -134,7 +134,8 @@
         }
         return Object.values(agg).map((a) => {
           const q = a.symbol && data.quotes ? data.quotes[a.symbol] : null;
-          const cap = q && q.market_cap ? q.market_cap : null;
+          // Only a market cap in the trade currency gives a meaningful share.
+          const cap = q && q.market_cap && q.currency === CURRENCY_DEFAULT[a.market] ? q.market_cap : null;
           const net = a.buy_value - a.sell_value;
           return { ...a, insiders: a.insiders.size, net_value: net, market_cap: cap,
             net_pct_of_cap: cap ? net / cap : null };
