@@ -23,7 +23,7 @@ SHARE_TYPES = {"buy", "sell"}
 # Rough NOK value of one unit, only for order-of-magnitude comparisons across
 # currencies. A factor of 20 threshold makes exact rates irrelevant.
 ROUGH_NOK = {"NOK": 1.0, "SEK": 1.0, "DKK": 1.55, "EUR": 11.5, "USD": 10.5, "GBP": 13.5,
-             "GBX": 0.135, "GBP_PENCE": 0.135, "CHF": 12.0, "CAD": 7.7}
+             "CHF": 12.0, "CAD": 7.7}
 # No Nordic share trades above this price in NOK equivalent.
 MAX_SHARE_PRICE_NOK = 100_000.0
 
@@ -40,8 +40,23 @@ def _reject(trade: dict, reason: str) -> None:
     trade["parse_confidence"] = min(trade.get("parse_confidence") or 1.0, 0.3)
 
 
+def normalise_quote(quote: dict | None) -> dict | None:
+    """London quotes are in pence ('GBp' or 'GBX'); convert them to pounds.
+
+    This must happen before any upper-casing, since 'GBp'.upper() is 'GBP'.
+    """
+    if not quote or quote.get("currency") not in ("GBp", "GBX", "GBx"):
+        return quote
+    q = dict(quote)
+    q["currency"] = "GBP"
+    if q.get("price") is not None:
+        q["price"] = q["price"] / 100
+    return q
+
+
 def check_trade(trade: dict, quote: dict | None) -> str | None:
     """Blank price and value on the trade dict if they are implausible. Returns the reason."""
+    quote = normalise_quote(quote)
     price, value = trade.get("price"), trade.get("value")
     currency = (trade.get("currency") or "").upper()
     if price is None and value is None:
