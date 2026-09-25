@@ -232,11 +232,11 @@ def _quantity(scope: str, fallback: str) -> tuple[float | None, str | None]:
 
 def _money(text: str) -> tuple[float | None, str | None, float | None]:
     """Return (price, currency, total value) by scoring every currency amount in the text."""
-    candidates: list[tuple[int, int, float, str]] = []
+    candidates: list[tuple[int, int, str, str]] = []
     for pat in MONEY_PATTERNS:
         for m in pat.finditer(text):
-            n = parse_number(m.group("num"))
-            if n is None:
+            raw = m.group("num")
+            if parse_number(raw) is None:
                 continue
             cur = m.group("cur").upper()
             cur = "NOK" if cur in ("KR", "KRONER") else cur
@@ -249,21 +249,23 @@ def _money(text: str) -> tuple[float | None, str | None, float | None]:
                 score += 3
             if VALUE_CONTEXT.search(before):
                 score -= 4
-            candidates.append((score, m.start(), n, cur))
+            candidates.append((score, m.start(), raw, cur))
     if not candidates:
         return None, None, None
     candidates.sort(key=lambda c: (-c[0], c[1]))
     price = currency = value = None
     best = candidates[0]
     if best[0] > 0:
-        price, currency = best[2], best[3]
+        price, currency = parse_number(best[2], prefer_decimal=True), best[3]
     values = [c for c in candidates if c[0] < 0]
     if values:
-        value = values[0][2]
+        value = parse_number(values[0][2])
         currency = currency or values[0][3]
-    if price is None and len(candidates) == 1 and best[2] < 100_000:
-        # A single bare amount is far more likely a price than a total.
-        price, currency = best[2], best[3]
+    if price is None and len(candidates) == 1:
+        single = parse_number(best[2])
+        if single is not None and single < 100_000:
+            # A single bare amount is far more likely a price than a total.
+            price, currency = parse_number(best[2], prefer_decimal=True), best[3]
     return price, currency, value
 
 

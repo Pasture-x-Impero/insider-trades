@@ -26,6 +26,7 @@
   const compact = (n) => {
     if (n == null) return "";
     const abs = Math.abs(n);
+    if (abs >= 1e12) return (n / 1e12).toFixed(1) + " tn";
     if (abs >= 1e9) return (n / 1e9).toFixed(1) + " bn";
     if (abs >= 1e6) return (n / 1e6).toFixed(1) + " m";
     if (abs >= 1e3) return (n / 1e3).toFixed(0) + " k";

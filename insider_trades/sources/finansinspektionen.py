@@ -20,7 +20,6 @@ from urllib.parse import quote_plus
 import httpx
 
 from ..models import Market, Trade, TradeType
-from ..parsers.numbers import parse_number
 
 log = logging.getLogger(__name__)
 
@@ -41,6 +40,10 @@ HEADERS = {
     "closely associated": "close", "narstaende": "close",
     "nature of transaction": "nature", "karaktar": "nature",
     "instrument type": "instrument_type", "instrumenttyp": "instrument_type",
+    "intrument type": "instrument_type",  # sic, the English export misspells it
+    "linked to share option programme": "option_programme",
+    "kopplad till aktieprogram": "option_programme",
+    "ar kopplad till aktieprogram": "option_programme",
     "instrument name": "instrument", "instrumentnamn": "instrument",
     "isin": "isin",
     "transaction date": "transaction_date", "transaktionsdatum": "transaction_date",
@@ -96,6 +99,13 @@ EXERCISE_WORDS = re.compile(r"exercise|utnyttjande|losen|inlosen", re.I)
 ALLOTMENT_WORDS = re.compile(r"allot|tilldeln|share saving|aktiesparprogram|incentive|incitament|vesting|gift|gava", re.I)
 YES_WORDS = {"yes", "ja", "true", "1"}
 
+# Instrument types that are the company's own equity. Everything else (swaps, bonds,
+# options, warrants, funds, emission allowances) is not a buy or sell of the stock.
+EQUITY_INSTRUMENTS = {
+    "share", "shares", "aktie", "aktier", "bta", "btu", "unit", "units",
+    "depositary receipt", "depository receipt", "sdr", "interim share",
+}
+
 
 def normalise(header: str) -> str:
     s = unicodedata.normalize("NFKD", header)
@@ -133,6 +143,24 @@ def parse_export(text: str) -> list[dict]:
     return out
 
 
+def export_number(text: str) -> float | None:
+    """Numbers in the export are machine formatted: '7179.0', '474.256', '0.026'.
+
+    A dot is always the decimal separator here, so the Nordic heuristics in
+    parse_number (which read '474.256' as 474256) must not be used. A comma is
+    accepted as decimal separator for the Swedish site.
+    """
+    s = (text or "").replace("\u00a0", "").replace(" ", "").strip()
+    if not s:
+        return None
+    if "," in s and "." not in s:
+        s = s.replace(",", ".")
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
 def _date(s: str) -> date | None:
     s = s.strip()
     for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y-%m-%d %H:%M:%S", "%d.%m.%Y"):
@@ -154,8 +182,16 @@ def _datetime(s: str) -> datetime | None:
     return datetime(d.year, d.month, d.day, tzinfo=UTC) if d else None
 
 
+def is_equity(instrument_type: str) -> bool:
+    """True for share-like instruments. An empty type is treated as equity (older exports)."""
+    t = normalise(instrument_type)
+    return not t or t in EQUITY_INSTRUMENTS
+
+
 def classify(nature: str, details: str, instrument_type: str) -> TradeType:
     base = NATURE.get(normalise(nature))
+    if base in (TradeType.BUY, TradeType.SELL) and not is_equity(instrument_type):
+        return TradeType.OTHER
     blob = f"{details} {instrument_type}"
     if base is TradeType.BUY and EXERCISE_WORDS.search(blob):
         return TradeType.OPTION_EXERCISE
@@ -171,8 +207,16 @@ def row_to_trade(row: dict) -> Trade | None:
     issuer = row.get("issuer", "").strip()
     if not published or not issuer:
         return None
-    quantity = parse_number(row.get("volume", ""))
-    price = parse_number(row.get("price", ""))
+    quantity = export_number(row.get("volume", ""))
+    price = export_number(row.get("price", ""))
+    value = None
+    if quantity is not None and price is not None:
+        if quantity > 1 and price == quantity:
+            # The filer put the nominal amount in both fields (seen for swaps). There is
+            # no per unit price, so the product would be meaningless.
+            price = None
+        else:
+            value = round(quantity * price, 2)
     close = normalise(row.get("close", "")) in YES_WORDS
     key = "|".join(
         row.get(k, "") for k in (
@@ -195,10 +239,13 @@ def row_to_trade(row: dict) -> Trade | None:
         position=row.get("position", "").strip() or None,
         close_associate=close or (bool(notifier) and bool(pdmr) and notifier != pdmr),
         trade_type=classify(row.get("nature", ""), row.get("details", ""), row.get("instrument_type", "")),
-        instrument=row.get("instrument", "").strip() or row.get("instrument_type", "").strip() or None,
+        instrument=" · ".join(
+            x for x in (row.get("instrument", "").strip(), row.get("instrument_type", "").strip()) if x
+        ) or None,
         quantity=quantity,
         price=price,
-        currency=row.get("currency", "").strip().upper() or ("SEK" if price is not None else None),
+        value=value,
+        currency=row.get("currency", "").strip().upper() or ("SEK" if quantity is not None else None),
         venue=row.get("venue", "").strip() or None,
         status=row.get("status", "").strip() or None,
         title=f"{row.get('nature', '').strip()} {row.get('instrument', '').strip()}".strip() or None,
