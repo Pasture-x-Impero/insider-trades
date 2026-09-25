@@ -20,6 +20,17 @@ PRICE_RATIO_LIMIT = 20.0
 ABSOLUTE_LIMIT = {"SEK": 100e9, "NOK": 100e9, "DKK": 100e9}
 DEFAULT_ABSOLUTE_LIMIT = 10e9
 SHARE_TYPES = {"buy", "sell"}
+# Rough NOK value of one unit, only for order-of-magnitude comparisons across
+# currencies. A factor of 20 threshold makes exact rates irrelevant.
+ROUGH_NOK = {"NOK": 1.0, "SEK": 1.0, "DKK": 1.55, "EUR": 11.5, "USD": 10.5, "GBP": 13.5,
+             "GBX": 0.135, "GBP_PENCE": 0.135, "CHF": 12.0, "CAD": 7.7}
+# No Nordic share trades above this price in NOK equivalent.
+MAX_SHARE_PRICE_NOK = 100_000.0
+
+
+def to_nok(amount: float, currency: str) -> float | None:
+    rate = ROUGH_NOK.get((currency or "").upper())
+    return amount * rate if rate else None
 
 
 def _reject(trade: dict, reason: str) -> None:
@@ -36,11 +47,24 @@ def check_trade(trade: dict, quote: dict | None) -> str | None:
     if price is None and value is None:
         return None
     same_currency = bool(quote and quote.get("currency") and quote["currency"].upper() == currency)
+    if price:
+        price_nok = to_nok(price, currency)
+        if price_nok and price_nok > MAX_SHARE_PRICE_NOK:
+            reason = f"price {price:g} {currency} per unit is above any Nordic share price"
+            _reject(trade, reason)
+            return reason
+    ratio = None
     if same_currency and price and quote.get("price"):
         ratio = price / quote["price"]
+    elif price and quote and quote.get("price") and quote.get("currency"):
+        a, b = to_nok(price, currency), to_nok(quote["price"], quote["currency"])
+        if a and b:
+            ratio = a / b
+    if ratio is not None:
         too_low = trade.get("trade_type") in SHARE_TYPES and ratio < 1 / PRICE_RATIO_LIMIT
         if ratio > PRICE_RATIO_LIMIT or too_low:
-            reason = f"price {price:g} is {ratio:.3g}x the current share price {quote['price']:g}"
+            reason = (f"price {price:g} {currency} is {ratio:.3g}x the current share price "
+                      f"{quote['price']:g} {quote.get('currency') or ''}")
             _reject(trade, reason)
             return reason
     if same_currency and value and quote.get("market_cap") and value > quote["market_cap"]:

@@ -22,7 +22,7 @@ def test_total_in_price_field_is_rejected():
     # Schouw: 25 000 shares at "19 500 000" per share.
     t = trade(quantity=25000.0, price=19_500_000.0, value=487_500_000_000.0, currency="DKK", symbol=None)
     reason = check_trade(t, None)
-    assert "plausibility limit" in reason
+    assert "above any Nordic share price" in reason  # caught by the per unit cap first
     assert t["price"] is None and t["value"] is None and t["parse_confidence"] <= 0.3
 
 
@@ -44,9 +44,19 @@ def test_value_above_market_cap_is_rejected():
     assert "market cap" in check_trade(t, QUOTE)
 
 
-def test_currency_mismatch_skips_quote_checks():
+def test_currency_mismatch_uses_rough_fx():
+    # 2020 Bulkers: 299 USD against a quote of about 130 NOK is 24x after conversion.
     t = trade(currency="USD", price=299.0, value=299_000.0)
-    assert check_trade(t, QUOTE) is None
+    assert "x the current share price" in check_trade(t, {**QUOTE, "price": 130.0})
+    ok = trade(currency="USD", price=12.5, value=12_500.0)
+    assert check_trade(ok, {**QUOTE, "price": 130.0}) is None
+
+
+def test_absurd_price_per_share_without_quote():
+    # Schouw: 678 shares at 498 791 DKK each, and no quote to compare with.
+    t = trade(currency="DKK", quantity=678.0, price=498_791.04, value=338_180_325.0, symbol=None)
+    assert "above any Nordic share price" in check_trade(t, None)
+    assert t["value"] is None
 
 
 def test_check_all_returns_flagged():
