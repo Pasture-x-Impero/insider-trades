@@ -17,9 +17,12 @@ from insider_trades.sources.finansinspektionen import (  # noqa: E402
     parse_export,
 )
 
-since = date.today() - timedelta(days=60)
+since = date(2026, 8, 10)
 with httpx.Client(timeout=60, follow_redirects=True, headers={"user-agent": "insider-trades-debug"}) as c:
-    text = FinansinspektionenSource(c).download(since, since + timedelta(days=13))
+    text = FinansinspektionenSource(c).download(since, date(2026, 8, 16))
+for line in text.splitlines():
+    if "swedbank" in line.lower():
+        print("RAW SWED:", line)
 
 lines = text.splitlines()
 print("RAW HEADER:", lines[0])
