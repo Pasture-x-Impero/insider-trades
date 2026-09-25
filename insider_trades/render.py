@@ -16,6 +16,7 @@ import httpx
 
 from .models import Market
 from .prices import PriceService, QuoteService
+from .sanity import check_all
 from .store import Store, TradeQuery
 
 log = logging.getLogger(__name__)
@@ -42,6 +43,16 @@ def collect_prices(store: Store, trades: list[dict], prices: PriceService) -> di
     return series
 
 
+def log_largest(trades: list[dict], flagged: int) -> None:
+    """Log the biggest remaining values per market so implausible data is easy to spot."""
+    log.info("sanity: %d trades had price or value blanked", flagged)
+    for market in ("NO", "SE"):
+        rows = sorted((t for t in trades if t["market"] == market and t.get("value")), key=lambda t: -t["value"])
+        for t in rows[:5]:
+            log.info("largest %s: %s %s %s %s | %s | %s x %s", market, f"{t['value']:,.0f}", t.get("currency") or "",
+                     t["trade_type"], t["issuer"], t.get("instrument") or "", t.get("quantity"), t.get("price"))
+
+
 def render_html(store: Store, query: TradeQuery, prices: PriceService | None = None,
                 title: str = "Insider Trades", quotes: QuoteService | None = None) -> str:
     items, total = store.query(query)
@@ -53,6 +64,8 @@ def render_html(store: Store, query: TradeQuery, prices: PriceService | None = N
         quotes = QuoteService(prices.client, store)
     symbols = sorted({t["symbol"] for t in trades if t.get("symbol")})
     quote_info = quotes.quotes(symbols) if quotes and symbols else {}
+    flagged = check_all(trades, quote_info)
+    log_largest(trades, len(flagged))
     summary = store.summary(TradeQuery())
     payload = {
         "generated_at": datetime.now(UTC).isoformat(),

@@ -96,10 +96,6 @@ def main(argv: list[str] | None = None) -> int:
                 f"insider={sum(bool(t.insider_name) for t in rows)}/{n}, "
                 f"text={sum(bool(t.raw_text) for t in rows)}/{n}"
             )
-            biggest = sorted((t for t in rows if t.value), key=lambda t: -t.value)[:5]
-            for t in biggest:
-                print(f"  largest {market.value}: {t.value:,.0f} {t.currency or ''} {t.trade_type.value} "
-                      f"{t.issuer} | {t.instrument or ''} | {t.quantity} x {t.price}")
         return 0
 
     if args.command == "serve":
