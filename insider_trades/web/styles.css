@@ -97,6 +97,7 @@ td.pct.strong.down { background: color-mix(in srgb, var(--sell) 14%, transparent
   border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 260px; overflow: auto;
 }
 .detail .notes { color: var(--muted); font-size: 12px; }
+.detail .notes.warn { color: var(--sell); }
 .chart { margin-top: 16px; }
 .chart h3 { font-size: 13px; color: var(--text-2); margin: 0 0 6px; font-weight: 600; }
 .chart svg { width: 100%; height: 200px; display: block; }

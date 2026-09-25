@@ -352,6 +352,7 @@
       <h2>${esc(t.issuer)} ${t.ticker ? `<span class="muted">${esc(t.ticker)}</span>` : ""}</h2>
       <div class="muted">${esc(t.title || "")}</div>
       <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
+      ${t.suspect ? `<p class="notes warn">Price and value hidden: ${esc(t.suspect)}. Check the source filing.</p>` : ""}
       ${t.market === "NO" ? `<p class="notes">Parsed from free text with confidence ${Math.round(t.parse_confidence * 100)}%. Check the original below.</p>` : ""}
       ${t.raw_text ? `<pre>${esc(t.raw_text)}</pre>` : ""}
       ${t.source_url ? `<p><a href="${esc(t.source_url)}" target="_blank" rel="noopener">Open source announcement</a></p>` : ""}
