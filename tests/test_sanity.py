@@ -63,3 +63,15 @@ def test_check_all_returns_flagged():
     trades = [trade(), trade(source_id="2", price=1_000.0, value=1_000_000.0)]
     flagged = check_all(trades, {"X.OL": QUOTE})
     assert [t["source_id"] for t, _ in flagged] == ["2"]
+
+
+def test_london_quotes_in_pence():
+    # AstraZeneca: 121.02 GBP per share against a quote of 12552 GBp (125.52 GBP) is fine.
+    azn = trade(currency="GBP", price=121.02, value=121_020.0)
+    assert check_trade(azn, {"price": 12552.0, "currency": "GBp", "market_cap": None}) is None
+    # AJ Bell: 161 SEK against 567 GBp (5.67 GBP, about 77 NOK) is about 2x, fine.
+    ajb = trade(currency="SEK", price=161.0, value=161_000.0)
+    assert check_trade(ajb, {"price": 567.0, "currency": "GBp", "market_cap": None}) is None
+    # A real outlier in pounds is still caught.
+    bad = trade(currency="GBP", price=5000.0, value=5_000_000.0)
+    assert check_trade(bad, {"price": 12552.0, "currency": "GBp", "market_cap": None}) is not None
