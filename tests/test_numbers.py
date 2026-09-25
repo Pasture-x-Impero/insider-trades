@@ -24,3 +24,10 @@ def test_find_date_variants():
     assert find_date("Trade date: 2025-09-04") == date(2025, 9, 4)
     assert find_date("on 1st of September 2025") == date(2025, 9, 1)
     assert find_date("no date here") is None
+
+
+def test_prefer_decimal_for_prices():
+    assert parse_number("12.345") == 12345
+    assert parse_number("12.345", prefer_decimal=True) == 12.345
+    assert parse_number("1.234.567", prefer_decimal=True) == 1234567
+    assert parse_number("0.026", prefer_decimal=True) == 0.026

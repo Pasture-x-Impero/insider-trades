@@ -150,3 +150,67 @@ def test_fi_nature_mapping_covers_live_values():
         assert classify(nature, "", "") is expected, nature
     assert classify("Something new", "", "") is TradeType.OTHER
     assert classify("", "", "") is TradeType.UNKNOWN
+
+
+REAL_EXPORT = (
+    "Publication date;Issuer;LEI-code;Notifier;Person discharging managerial responsibilities;Position;"
+    "Closely associated;Amendment;Details of amendment;Initial notification;Linked to share option programme;"
+    "Nature of transaction;Intrument type;Instrument name;ISIN;Transaction date;Volume;Unit;Price;Currency;"
+    "Trading venue;Status;\n"
+    "09/08/2026 22:05:02;Gränges AB;5493006UG44TYSIXOB13;Fredrik Spens;Fredrik Spens;Other senior executive;"
+    ";;;Yes;;Disposal;Share;Gränges AB;SE0006288015;06/08/2026 00:00:00;7179.0;Quantity;187.0;SEK;"
+    "NASDAQ STOCKHOLM AB;Current;\n"
+    "09/08/2026 16:16:02;Swedish Orphan Biovitrum AB (publ);X;A B;A B;CEO;;;;Yes;;Disposal;Share;"
+    "Swedish Orphan Biovitrum AB;SE0000872095;06/08/2026 00:00:00;97515.0;Quantity;474.256;SEK;"
+    "NASDAQ STOCKHOLM AB;Current;\n"
+    "09/08/2026 12:00:00;K33 AB (publ);X;C D;C D;Board member;;;;Yes;;Return of loan increase;Share;"
+    "K33 AB (publ);SE0000000001;06/08/2026 00:00:00;40000000.0;Quantity;0.026;SEK;;Current;\n"
+)
+
+
+def test_fi_real_export_numbers_use_dot_decimals():
+    """The export writes '474.256' meaning 474.256 SEK, not 474 256."""
+    from insider_trades.sources.finansinspektionen import export_number, row_to_trade
+
+    assert export_number("474.256") == 474.256
+    assert export_number("0.026") == 0.026
+    assert export_number("7179.0") == 7179
+    assert export_number("281,50") == 281.5
+    assert export_number("") is None and export_number("n/a") is None
+
+    rows = parse_export(REAL_EXPORT)
+    assert rows[0]["instrument_type"] == "Share"  # the misspelled header is mapped
+    trades = [row_to_trade(r) for r in rows]
+    granges, sobi, k33 = trades
+    assert granges.price == 187.0 and granges.quantity == 7179 and granges.value == 7179 * 187.0
+    assert granges.published_at.isoformat().startswith("2026-08-09T22:05:02")
+    assert granges.transaction_date == date(2026, 8, 6)
+    assert sobi.price == 474.256 and round(sobi.value) == round(97515 * 474.256)
+    assert k33.price == 0.026 and k33.trade_type is TradeType.OTHER
+
+
+def test_fi_swap_with_nominal_in_price_is_other_without_value():
+    """Swedbank: an interest rate swap reported with the nominal amount as both volume and price."""
+    from insider_trades.sources.finansinspektionen import row_to_trade
+
+    text = REAL_EXPORT.split("\n")[0] + "\n" + (
+        "12/08/2026 13:38:12;Swedbank AB (publ);M312WZV08Y7LYUC71685;Sparbanken Skåne AB (publ);Rasmus Roos;"
+        "Member of the Board of Directors;Yes;;;Yes;;Subscription;Swap;Ränteswapavtal;EZD17D1P8FN0;"
+        "12/08/2026 00:00:00;18000000.0;Quantity;18000000.0;SEK;SWEDBANK - SYSTEMATIC INTERNALISER;Current;\n"
+        "10/08/2026 10:20:43;K-Fast Holding AB;549300VT0UXKWES37P59;Niclas Bagler;Niclas Bagler;"
+        "Deputy CEO/Deputy Managing Director;;;;Yes;;Acquisition;Share;K-Fast Holding AB B;SE0016101679;"
+        "10/08/2026 00:00:00;4000.0;Quantity;11.5;SEK;SWEDBANK - SYSTEMATIC INTERNALISER;Current;\n"
+        "15/08/2026 20:30:08;Prostatype Genomics AB;X;Anders Lundberg;Anders Lundberg;Member of the Board;"
+        ";;;Yes;;Subscription;BTU;Prostatype Genomics BTU;SE0029529825;12/08/2026 00:00:00;643750.0;Quantity;"
+        "0.80;SEK;FIRST NORTH SWEDEN - SME GROWTH MARKET;Current;\n"
+        "01/08/2026 10:00:00;Tele2 AB;X;Kinnevik AB;Someone;Board member;Yes;;;Yes;;Acquisition;"
+        "Other derivative;Total Return Swap;SE0000000002;01/08/2026 00:00:00;426919.0;Quantity;163.4646;SEK;;Current;\n"
+    )
+    swap, kfast, btu, trs = [row_to_trade(r) for r in parse_export(text)]
+    assert swap.trade_type is TradeType.OTHER
+    assert swap.price is None and swap.value is None and swap.quantity == 18_000_000
+    assert swap.close_associate is True and swap.insider_name == "Rasmus Roos"
+    assert swap.instrument == "Ränteswapavtal · Swap"
+    assert kfast.trade_type is TradeType.BUY and kfast.value == 46000
+    assert btu.trade_type is TradeType.BUY and btu.value == round(643750 * 0.8, 2)
+    assert trs.trade_type is TradeType.OTHER and trs.value is not None

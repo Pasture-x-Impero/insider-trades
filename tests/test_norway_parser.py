@@ -142,3 +142,12 @@ def test_holding_number_is_not_mistaken_for_quantity():
     )
     p = parse_announcement("Mandatory notification of trade", body, "Arribatec Group ASA")
     assert p.quantity == 85226
+
+
+def test_three_decimal_price_is_not_read_as_thousands():
+    body = ("Kari Nordmann, CFO, has today purchased 10 000 shares at an average price of NOK 12.345 per share, "
+            "for a total consideration of NOK 123.450.")
+    p = parse_announcement("Mandatory notification of trade", body, "Foo ASA")
+    assert p.price == 12.345
+    assert p.quantity == 10000
+    assert p.value == 123450  # totals keep the thousands reading

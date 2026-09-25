@@ -20,8 +20,13 @@ MONTHS = {
 }
 
 
-def parse_number(text: str) -> float | None:
-    """Parse '85 226', '1,000', '1.000.000', '9,50', '0.64', '12.345,67' into a float."""
+def parse_number(text: str, prefer_decimal: bool = False) -> float | None:
+    """Parse '85 226', '1,000', '1.000.000', '9,50', '0.64', '12.345,67' into a float.
+
+    A single dot followed by exactly three digits ('12.345') is ambiguous. By default it
+    is read as a thousands separator, which suits quantities and totals. Prices pass
+    prefer_decimal=True, reading it as 12.345.
+    """
     s = text.replace(" ", " ").replace(" ", " ").strip()
     s = re.sub(r"\s+", "", s)
     if not s or not re.fullmatch(r"[\d.,]+", s) or not s[0].isdigit():
@@ -34,7 +39,7 @@ def parse_number(text: str) -> float | None:
             s = s.replace(",", "")
     elif "," in s:
         s = s.replace(",", "") if _THOUSANDS_COMMA.match(s) else s.replace(",", ".")
-    elif "." in s and _THOUSANDS_DOT.match(s):
+    elif "." in s and _THOUSANDS_DOT.match(s) and not (prefer_decimal and s.count(".") == 1):
         s = s.replace(".", "")
     try:
         return float(s)
